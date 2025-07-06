@@ -7,8 +7,7 @@ const warehouseColors = {};
 
 function getColorForWarehouse(id) {
   if (!warehouseColors[id]) {
-    const color = '#' + Math.floor(Math.random() * 16777215).toString(16);
-    warehouseColors[id] = color;
+    warehouseColors[id] = '#' + Math.floor(Math.random() * 16777215).toString(16);
   }
   return warehouseColors[id];
 }
@@ -25,22 +24,35 @@ document.getElementById('csv-file').addEventListener('change', function (e) {
       const values = lines[i].split(',');
       const row = {};
       headers.forEach((h, idx) => {
-        row[h.trim()] = values[idx].trim();
+        row[h.trim()] = values[idx]?.trim();
       });
 
-      const { type, name, lat, lng, warehouse_id } = row;
-      const color = getColorForWarehouse(warehouse_id);
+      const lat = parseFloat(row.lat);
+      const lng = parseFloat(row.lng);
+      const type = row.type;
+      const label = row.label;
+      const originId = row.originWarehouseId;
 
-      const markerOptions = {
-        radius: type === 'warehouse' ? 10 : 6,
-        color: color,
+      if (isNaN(lat) || isNaN(lng)) continue; // Skip invalid rows
+
+      let color = '#3388ff'; // default blue
+
+      if (type === 'warehouse') {
+        color = getColorForWarehouse(label);
+      } else if (originId) {
+        color = getColorForWarehouse(originId);
+      }
+
+      const radius = type === 'warehouse' ? 10 : 6;
+
+      L.circleMarker([lat, lng], {
+        radius,
+        color,
         fillColor: color,
         fillOpacity: 0.8
-      };
-
-      L.circleMarker([parseFloat(lat), parseFloat(lng)], markerOptions)
-        .addTo(map)
-        .bindPopup(`<b>${type.toUpperCase()}</b><br>${name}<br>Warehouse ID: ${warehouse_id}`);
+      })
+      .addTo(map)
+      .bindPopup(`<b>${type.toUpperCase()}</b><br>${label}`);
     }
   };
 
