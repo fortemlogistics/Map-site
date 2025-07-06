@@ -4,7 +4,36 @@ document.addEventListener("DOMContentLoaded", () => {
     attribution: '© OpenStreetMap'
   }).addTo(map);
 
-  const markerClusterGroup = L.markerClusterGroup();
+  const markerClusterGroup = L.markerClusterGroup({
+  iconCreateFunction: function (cluster) {
+    const markers = cluster.getAllChildMarkers();
+    let color = '#999';
+
+    if (markers.length > 0) {
+      const icon = markers[0].options.icon;
+      const colorMatch = icon.options.html.match(/color:(.*?);/);
+      if (colorMatch) {
+        color = colorMatch[1].trim();
+      }
+    }
+
+    return L.divIcon({
+      html: `<div style="
+        background-color: ${color};
+        color: white;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        line-height: 40px;
+        text-align: center;
+        font-size: 16px;
+        box-shadow: 0 0 4px rgba(0,0,0,0.3);
+      ">${cluster.getChildCount()}</div>`,
+      className: 'custom-cluster-icon',
+      iconSize: [40, 40]
+    });
+  }
+});
   map.addLayer(markerClusterGroup);
 
   const warehouseColors = {
