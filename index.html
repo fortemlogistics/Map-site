@@ -1,49 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <title>Warehouse & Truck Map</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <!-- Leaflet CSS -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-
-  <!-- MarkerCluster CSS -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
-  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
-
-  <!-- Font Awesome (for icons) -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-
-  <!-- Custom CSS -->
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <title>Fortem Cement Logistics Map PH</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
+  <script src="https://unpkg.com/papaparse@5.3.2/papaparse.min.js"></script>
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css">
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+    #map {
+      height: calc(100% - 60px); /* leave room for header */
+    }
+    .top-navbar {
+      background-color: #0e1320;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      font-family: 'Arial', sans-serif;
+      font-weight: bold;
+      font-size: 18px;
+    }
+    .header-title {
+      flex-shrink: 0;
+    }
+    .header-menu {
+      display: flex;
+      gap: 20px;
+    }
+    .header-menu button {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 14px;
+      cursor: pointer;
+      font-weight: normal;
+    }
+    .header-menu button:hover {
+      text-decoration: underline;
+    }
+  </style>
 </head>
 <body>
 
   <header class="top-navbar">
-  <div class="header-title">Fortem Cement Logistics Map PH</div>
-  <nav class="header-menu">
-    <button onclick="toggleAnalytics()">Toggle Analytics</button>
-    <button onclick="toggleFilters()">Toggle Filters</button>
-    <button onclick="toggleImport()">Toggle Import/Update</button>
-    <button onclick="exportAllData()">Export All Data</button>
-    <button onclick="showHelp()">Help</button>
-  </nav>
-</header>
-  <input type="file" id="csv-file" accept=".csv" />
+    <div class="header-title">Fortem Cement Logistics Map PH</div>
+    <nav class="header-menu">
+      <button onclick="toggleAnalytics()">Toggle Analytics</button>
+      <button onclick="toggleFilters()">Toggle Filters</button>
+      <button onclick="toggleImport()">Toggle Import/Update</button>
+      <button onclick="exportAllData()">Export All Data</button>
+      <button onclick="showHelp()">Help</button>
+    </nav>
+  </header>
+
   <div id="map"></div>
 
-  <!-- Leaflet JS -->
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
-  <!-- MarkerCluster JS -->
-  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
-
-  <!-- Your Custom JS -->
-  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-<script src="script.js"></script>
+  <script src="script.js"></script>
 </body>
-  
 </html>
-
-
