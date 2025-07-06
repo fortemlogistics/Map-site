@@ -205,3 +205,26 @@ function updateAnalytics(data) {
     TRAILER: ${trailer}<br>
   `;
 }
+
+const toggleFilterControl = L.control({ position: 'topright' });
+toggleFilterControl.onAdd = function () {
+  const div = L.DomUtil.create('div', 'toggle-control');
+  div.innerHTML = `
+    <label style="background: white; padding: 4px; display: block;">
+      <input type="checkbox" id="toggle-filters" checked />
+      Show Filters
+    </label>
+  `;
+  return div;
+};
+toggleFilterControl.addTo(map);
+
+document.addEventListener('DOMContentLoaded', () => {
+  const toggle = document.getElementById('toggle-filters');
+  toggle.addEventListener('change', function () {
+    const filterControls = document.querySelectorAll('.filter-control, .date-filter');
+    filterControls.forEach(el => {
+      el.style.display = this.checked ? 'block' : 'none';
+    });
+  });
+});
