@@ -119,66 +119,23 @@ legend.onAdd = function () {
 };
 legend.addTo(map);
 
-const warehouseFilter = L.control({ position: 'topright' });
-warehouseFilter.onAdd = function () {
-  const div = L.DomUtil.create('div', 'filter-control');
-  div.innerHTML = `<select id="warehouse-select"><option value="all">All Warehouses</option></select>`;
-  return div;
-};
-warehouseFilter.addTo(map);
-
-// 2. Add date range filter (optional based on CSV structure)
-const dateFilter = L.control({ position: 'topright' });
-dateFilter.onAdd = function () {
-  const div = L.DomUtil.create('div', 'date-filter');
+const analyticsToggleControl = L.control({ position: 'bottomleft' });
+analyticsToggleControl.onAdd = function () {
+  const div = L.DomUtil.create('div', 'analytics-toggle');
   div.innerHTML = `
-    <input type="date" id="start-date" />
-    <input type="date" id="end-date" />
+    <button id="toggle-analytics" style="padding: 6px;">📊 Analytics</button>
+    <div id="analytics-box" style="display: none;"></div>
   `;
   return div;
 };
-dateFilter.addTo(map);
+analyticsToggleControl.addTo(map);
 
-// 3. Export map to image
-const exportBtn = L.control({ position: 'topleft' });
-exportBtn.onAdd = function () {
-  const div = L.DomUtil.create('div', 'export-btn');
-  div.innerHTML = `<button onclick="exportMap()">🖼 Export Map</button>`;
-  return div;
-};
-exportBtn.addTo(map);
-
-function exportMap() {
-  html2canvas(document.getElementById('map')).then(canvas => {
-    const link = document.createElement('a');
-    link.download = 'map.png';
-    link.href = canvas.toDataURL();
-    link.click();
-  });
-}
-
-// 4. Support multiple CSV uploads
-let allData = [];
-document.getElementById('csv-file').addEventListener('change', function (e) {
-  const file = e.target.files[0];
-  Papa.parse(file, {
-    header: true,
-    skipEmptyLines: true,
-    complete: function (results) {
-      allData = allData.concat(results.data);
-      plotData(allData);
-    }
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('toggle-analytics').addEventListener('click', () => {
+    const box = document.getElementById('analytics-box');
+    box.style.display = box.style.display === 'none' ? 'block' : 'none';
   });
 });
-
-// 5. Add Analytics
-const analyticsControl = L.control({ position: 'bottomleft' });
-analyticsControl.onAdd = function () {
-  const div = L.DomUtil.create('div', 'analytics');
-  div.id = 'analytics-box';
-  return div;
-};
-analyticsControl.addTo(map);
 
 function updateAnalytics(data) {
   const warehouseCount = new Set();
@@ -191,40 +148,24 @@ function updateAnalytics(data) {
     if (type === 'warehouse') warehouseCount.add(row.originWarehouseId);
     if (type === 'rating') {
       truckCount++;
-      if ((row.vehicleType || '').toUpperCase() === 'TRAILER') trailer++;
-      if ((row.vehicleType || '').toUpperCase() === 'CARGO') cargo++;
+      const vType = (row.vehicleType || '').toUpperCase();
+      if (vType === 'TRAILER') trailer++;
+      if (vType === 'CARGO') cargo++;
     }
   });
 
+  const hasLinks = truckCount > 0;
+
   document.getElementById('analytics-box').innerHTML = `
-    <strong>Map Analytics</strong><br>
+    <strong>📊 Map Analytics</strong><br>
     Total Warehouses: ${warehouseCount.size}<br>
     Total Trucks/Rates: ${truckCount}<br><br>
-    <strong>Vehicle Types</strong><br>
+
+    <strong>🏭 Warehouse Details</strong><br>
+    ${hasLinks ? 'Warehouses linked to trucks/rates available.' : 'No trucks/rates linked to warehouses yet.'}<br><br>
+
+    <strong>🚚 Vehicle Types</strong><br>
     CARGO: ${cargo}<br>
     TRAILER: ${trailer}<br>
   `;
 }
-
-const toggleFilterControl = L.control({ position: 'topright' });
-toggleFilterControl.onAdd = function () {
-  const div = L.DomUtil.create('div', 'toggle-control');
-  div.innerHTML = `
-    <label style="background: white; padding: 4px; display: block;">
-      <input type="checkbox" id="toggle-filters" checked />
-      Show Filters
-    </label>
-  `;
-  return div;
-};
-toggleFilterControl.addTo(map);
-
-document.addEventListener('DOMContentLoaded', () => {
-  const toggle = document.getElementById('toggle-filters');
-  toggle.addEventListener('change', function () {
-    const filterControls = document.querySelectorAll('.filter-control, .date-filter');
-    filterControls.forEach(el => {
-      el.style.display = this.checked ? 'block' : 'none';
-    });
-  });
-});
