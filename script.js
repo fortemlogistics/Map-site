@@ -10,16 +10,19 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 const markerClusterGroup = L.markerClusterGroup();
 map.addLayer(markerClusterGroup);
 
-// Warehouse color store
+// Store warehouse colors
 const warehouseColors = {};
-function getColorForWarehouse(id) {
+
+// Assign and return a consistent color for a warehouse ID
+function getColorForWarehouse(rawId) {
+  const id = (rawId || '').trim().toUpperCase(); // Normalize key
   if (!warehouseColors[id]) {
     warehouseColors[id] = '#' + Math.floor(Math.random() * 16777215).toString(16);
   }
   return warehouseColors[id];
 }
 
-// Icon generator (truck or warehouse)
+// Create truck or warehouse icon
 function createIcon(iconType, color) {
   return L.divIcon({
     html: `<div style="color:${color}; font-size:30px;">
@@ -31,7 +34,7 @@ function createIcon(iconType, color) {
   });
 }
 
-// Timestamp formatter
+// Format timestamp
 function getCurrentTimestamp() {
   const now = new Date();
   return now.toLocaleString('en-PH', {
@@ -41,7 +44,7 @@ function getCurrentTimestamp() {
   });
 }
 
-// CSV Upload and Parsing
+// Handle file upload
 document.getElementById('csv-file').addEventListener('change', function (e) {
   const file = e.target.files[0];
 
@@ -53,15 +56,15 @@ document.getElementById('csv-file').addEventListener('change', function (e) {
       const timestamp = getCurrentTimestamp();
       const data = results.data;
 
-      // ✅ First loop: Assign colors to all warehouses by label (e.g., M01)
+      // 1️⃣ First: assign color to all warehouse labels
       data.forEach(row => {
         const { type, label } = row;
         if (type === 'warehouse' && label) {
-          getColorForWarehouse(label.trim());
+          getColorForWarehouse(label);
         }
       });
 
-      // ✅ Second loop: Place markers with consistent warehouse-based colors
+      // 2️⃣ Second: create markers for all rows
       data.forEach(row => {
         const {
           lat, lng, label, type, originWarehouseId,
@@ -73,13 +76,13 @@ document.getElementById('csv-file').addEventListener('change', function (e) {
         if (isNaN(latitude) || isNaN(longitude)) return;
 
         let color = '#999';
-        let iconType = 'fa-box';
+        let iconType = 'fa-box'; // fallback
 
         if (type === 'warehouse') {
-          color = getColorForWarehouse(label.trim());
+          color = getColorForWarehouse(label);
           iconType = 'fa-warehouse';
         } else {
-          color = getColorForWarehouse(originWarehouseId.trim());
+          color = getColorForWarehouse(originWarehouseId);
           iconType = 'fa-truck';
         }
 
@@ -102,4 +105,3 @@ document.getElementById('csv-file').addEventListener('change', function (e) {
     }
   });
 });
-
