@@ -3,11 +3,13 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '© OpenStreetMap'
 }).addTo(map);
 
-// Cluster group
-const markerClusterGroup = L.markerClusterGroup().addTo(map);
+// Add cluster group to the map
+const markerClusterGroup = L.markerClusterGroup();
+map.addLayer(markerClusterGroup);
 
-// Assign unique colors to each warehouse
+// Unique colors per warehouse
 const warehouseColors = {};
+
 function getColorForWarehouse(id) {
   if (!warehouseColors[id]) {
     warehouseColors[id] = '#' + Math.floor(Math.random() * 16777215).toString(16);
@@ -15,12 +17,15 @@ function getColorForWarehouse(id) {
   return warehouseColors[id];
 }
 
-// Create a custom icon with color and icon class
-function createIcon(iconClass, color) {
+// Create a colored icon using Font Awesome
+function createIcon(iconType, color) {
   return L.divIcon({
-    html: `<i class="fa-solid ${iconClass}" style="color:${color}; font-size:20px;"></i>`,
-    iconSize: [25, 25],
-    className: 'custom-marker'
+    html: `<div style="color:${color}; font-size:22px;">
+             <i class="fas ${iconType}"></i>
+           </div>`,
+    className: 'custom-icon',
+    iconSize: [30, 30],
+    iconAnchor: [15, 15]
   });
 }
 
@@ -29,6 +34,7 @@ document.getElementById('csv-file').addEventListener('change', function (e) {
   const reader = new FileReader();
 
   reader.onload = function () {
+    markerClusterGroup.clearLayers(); // clear old markers
     const lines = reader.result.trim().split('\n');
     const headers = lines[0].split(',');
 
@@ -41,25 +47,26 @@ document.getElementById('csv-file').addEventListener('change', function (e) {
 
       const lat = parseFloat(row.lat);
       const lng = parseFloat(row.lng);
-      const type = row.type;
       const label = row.label;
+      const type = row.type;
       const originId = row.originWarehouseId;
 
       if (isNaN(lat) || isNaN(lng)) continue;
 
-      let color = '#3388ff';
-      let iconClass = 'fa-box'; // default to warehouse
+      // Set color and icon
+      let color = '#999';
+      let iconType = 'fa-box'; // fallback icon
 
       if (type === 'warehouse') {
         color = getColorForWarehouse(label);
-        iconClass = 'fa-warehouse';
-      } else if (originId) {
+        iconType = 'fa-warehouse';
+      } else {
         color = getColorForWarehouse(originId);
-        iconClass = 'fa-truck';
+        iconType = 'fa-truck';
       }
 
       const marker = L.marker([lat, lng], {
-        icon: createIcon(iconClass, color)
+        icon: createIcon(iconType, color)
       }).bindPopup(`<b>${type.toUpperCase()}</b><br>${label}`);
 
       markerClusterGroup.addLayer(marker);
@@ -68,4 +75,5 @@ document.getElementById('csv-file').addEventListener('change', function (e) {
 
   reader.readAsText(file);
 });
+
 
