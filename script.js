@@ -21,9 +21,14 @@ const warehouseColors = {
 };
 
 // Get assigned color (warehouse or truck)
-function getColor(id) {
-  const key = (id || '').trim().toUpperCase();  // 🔁 Normalize
-  return warehouseColors[key] || '#999';        // Return color if matched, else gray
+if (type === 'warehouse') {
+  color = getColor(label);
+  iconType = 'fa-warehouse';
+} else {
+  // ✅ Fix for hidden \r or invisible characters in CSV headers
+  const originId = row["originWarehouseId"] || row["originWarehouseId\r"] || row["originWarehouseId﻿"] || '';
+  color = getColor(originId);
+  iconType = 'fa-truck';
 }
 
 // Create map icon
