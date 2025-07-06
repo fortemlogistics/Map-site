@@ -2,9 +2,6 @@ console.log("✅ script.js loaded");
 
 const map = L.map('map').setView([13.41, 122.56], 6);
 
-// Test marker (you can remove this later)
-L.marker([13.41, 122.56]).addTo(map).bindPopup("📍 Test Marker").openPopup();
-
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '© OpenStreetMap'
 }).addTo(map);
@@ -56,14 +53,15 @@ document.getElementById('csv-file').addEventListener('change', function (e) {
       const timestamp = getCurrentTimestamp();
       const data = results.data;
 
-      // ✅ First loop: Assign color to each warehouse before rendering
+      // ✅ First loop: Assign colors to all warehouses by label (e.g., M01)
       data.forEach(row => {
-        if (row.type === 'warehouse' && row.label) {
-          getColorForWarehouse(row.label);
+        const { type, label } = row;
+        if (type === 'warehouse' && label) {
+          getColorForWarehouse(label.trim());
         }
       });
 
-      // ✅ Second loop: Create markers for both trucks and warehouses
+      // ✅ Second loop: Place markers with consistent warehouse-based colors
       data.forEach(row => {
         const {
           lat, lng, label, type, originWarehouseId,
@@ -75,13 +73,13 @@ document.getElementById('csv-file').addEventListener('change', function (e) {
         if (isNaN(latitude) || isNaN(longitude)) return;
 
         let color = '#999';
-        let iconType = 'fa-box'; // default
+        let iconType = 'fa-box';
 
         if (type === 'warehouse') {
-          color = getColorForWarehouse(label);
+          color = getColorForWarehouse(label.trim());
           iconType = 'fa-warehouse';
         } else {
-          color = getColorForWarehouse(originWarehouseId); // truck uses warehouse color
+          color = getColorForWarehouse(originWarehouseId.trim());
           iconType = 'fa-truck';
         }
 
@@ -104,3 +102,4 @@ document.getElementById('csv-file').addEventListener('change', function (e) {
     }
   });
 });
+
