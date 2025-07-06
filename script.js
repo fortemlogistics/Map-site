@@ -8,7 +8,7 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 const markerClusterGroup = L.markerClusterGroup();
 map.addLayer(markerClusterGroup);
 
-// Fixed colors for specific warehouses
+// ✅ Define fixed warehouse colors
 const warehouseColors = {
   'L07': 'blue',
   'L08': 'red',
@@ -20,13 +20,13 @@ const warehouseColors = {
   'M01': 'black'
 };
 
-// Get color from warehouse ID
+// ✅ Get color from warehouse ID
 function getColor(id) {
   const key = (id || '').trim().toUpperCase();
   return warehouseColors[key] || '#999';
 }
 
-// Create custom icon
+// ✅ Create map icon
 function createIcon(iconType, color) {
   return L.divIcon({
     html: `<div style="color:${color}; font-size:30px;">
@@ -38,7 +38,7 @@ function createIcon(iconType, color) {
   });
 }
 
-// Format PH timestamp
+// ✅ Format current PH timestamp
 function getCurrentTimestamp() {
   const now = new Date();
   return now.toLocaleString('en-PH', {
@@ -48,80 +48,80 @@ function getCurrentTimestamp() {
   });
 }
 
-// Handle CSV upload
+// ✅ Upload CSV and render map
 document.getElementById('csv-file').addEventListener('change', function (e) {
   const file = e.target.files[0];
+  if (!file) return;
 
   Papa.parse(file, {
-  header: true,
-  skipEmptyLines: true,
-  transformHeader: header => header.trim().replace(/\r/g, ''),
-  complete: function (results) {
-    markerClusterGroup.clearLayers();
-    const timestamp = getCurrentTimestamp();  // ✅ Must be here
-    const data = results.data;
+    header: true,
+    skipEmptyLines: true,
+    transformHeader: header => header.trim().replace(/\r/g, ''),
+    complete: function (results) {
+      const data = results.data;
+      const timestamp = getCurrentTimestamp();
+      markerClusterGroup.clearLayers();
 
-    console.log("✅ CSV loaded:", data[0]);
+      console.log("✅ CSV Loaded", data);
 
-    data.forEach(row => {
-      const {
-        lat, lng, label, type,
-        originWarehouseId, destination,
-        rateValue, quantityMT, vehicleType
-      } = row;
+      data.forEach(row => {
+        const {
+          lat, lng, label, type,
+          originWarehouseId, destination,
+          rateValue, quantityMT, vehicleType
+        } = row;
 
-      const latitude = parseFloat(lat);
-      const longitude = parseFloat(lng);
-      if (isNaN(latitude) || isNaN(longitude)) return;
+        const latitude = parseFloat(lat);
+        const longitude = parseFloat(lng);
+        if (isNaN(latitude) || isNaN(longitude)) return;
 
-      let color = '#999';
-      let iconType = 'fa-box';
+        let color = '#999';
+        let iconType = 'fa-box';
 
-      if (type === 'warehouse') {
-        const warehouseId = (originWarehouseId || '').trim().toUpperCase();
-        color = getColor(warehouseId);
-        iconType = 'fa-warehouse';
-      } else {
-        const originId = (originWarehouseId || '').trim().toUpperCase();
-        color = getColor(originId);
-        iconType = 'fa-truck';
-      }
+        if ((type || '').trim().toLowerCase() === 'warehouse') {
+          const warehouseId = (originWarehouseId || '').trim().toUpperCase();
+          color = getColor(warehouseId);
+          iconType = 'fa-warehouse';
+        } else {
+          const originId = (originWarehouseId || '').trim().toUpperCase();
+          color = getColor(originId);
+          iconType = 'fa-truck';
+        }
 
-      const popup = `
-        <b>${label}</b><br>
-        Destination: ${destination || 'N/A'}<br>
-        Price: ${rateValue || 'N/A'}<br>
-        Quantity (MT): ${quantityMT || 'N/A'}<br>
-        Vehicle: ${vehicleType || 'N/A'}<br>
-        Created: ${timestamp}<br>
-        Updated: ${timestamp}
-      `;
+        const popup = `
+          <b>${label}</b><br>
+          Destination: ${destination || 'N/A'}<br>
+          Price: ${rateValue || 'N/A'}<br>
+          Quantity (MT): ${quantityMT || 'N/A'}<br>
+          Vehicle: ${vehicleType || 'N/A'}<br>
+          Created: ${timestamp}<br>
+          Updated: ${timestamp}
+        `;
 
-      const marker = L.marker([latitude, longitude], {
-        icon: createIcon(iconType, color)
-      }).bindPopup(popup);
+        const marker = L.marker([latitude, longitude], {
+          icon: createIcon(iconType, color)
+        }).bindPopup(popup);
 
-      markerClusterGroup.addLayer(marker);
-    });
-  }
+        markerClusterGroup.addLayer(marker);
+      });
+    },
+    error: function (err) {
+      console.error("❌ Error parsing CSV:", err);
+    }
+  });
 });
 
-// Add color legend
+// ✅ Add color legend to map
 const legend = L.control({ position: 'bottomright' });
-
 legend.onAdd = function () {
   const div = L.DomUtil.create('div', 'legend');
   div.innerHTML = '<strong>📦 Warehouse Colors</strong><br>';
-
   for (const [id, color] of Object.entries(warehouseColors)) {
     div.innerHTML += `
       <i style="background:${color}; width:12px; height:12px; display:inline-block; margin-right:6px; border-radius:50%;"></i>
       ${id}<br>`;
   }
-
   return div;
 };
-
 legend.addTo(map);
-
 
