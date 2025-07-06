@@ -119,3 +119,89 @@ legend.onAdd = function () {
 };
 legend.addTo(map);
 
+const warehouseFilter = L.control({ position: 'topright' });
+warehouseFilter.onAdd = function () {
+  const div = L.DomUtil.create('div', 'filter-control');
+  div.innerHTML = `<select id="warehouse-select"><option value="all">All Warehouses</option></select>`;
+  return div;
+};
+warehouseFilter.addTo(map);
+
+// 2. Add date range filter (optional based on CSV structure)
+const dateFilter = L.control({ position: 'topright' });
+dateFilter.onAdd = function () {
+  const div = L.DomUtil.create('div', 'date-filter');
+  div.innerHTML = `
+    <input type="date" id="start-date" />
+    <input type="date" id="end-date" />
+  `;
+  return div;
+};
+dateFilter.addTo(map);
+
+// 3. Export map to image
+const exportBtn = L.control({ position: 'topleft' });
+exportBtn.onAdd = function () {
+  const div = L.DomUtil.create('div', 'export-btn');
+  div.innerHTML = `<button onclick="exportMap()">🖼 Export Map</button>`;
+  return div;
+};
+exportBtn.addTo(map);
+
+function exportMap() {
+  html2canvas(document.getElementById('map')).then(canvas => {
+    const link = document.createElement('a');
+    link.download = 'map.png';
+    link.href = canvas.toDataURL();
+    link.click();
+  });
+}
+
+// 4. Support multiple CSV uploads
+let allData = [];
+document.getElementById('csv-file').addEventListener('change', function (e) {
+  const file = e.target.files[0];
+  Papa.parse(file, {
+    header: true,
+    skipEmptyLines: true,
+    complete: function (results) {
+      allData = allData.concat(results.data);
+      plotData(allData);
+    }
+  });
+});
+
+// 5. Add Analytics
+const analyticsControl = L.control({ position: 'bottomleft' });
+analyticsControl.onAdd = function () {
+  const div = L.DomUtil.create('div', 'analytics');
+  div.id = 'analytics-box';
+  return div;
+};
+analyticsControl.addTo(map);
+
+function updateAnalytics(data) {
+  const warehouseCount = new Set();
+  let truckCount = 0;
+  let trailer = 0;
+  let cargo = 0;
+
+  data.forEach(row => {
+    const type = (row.type || '').toLowerCase();
+    if (type === 'warehouse') warehouseCount.add(row.originWarehouseId);
+    if (type === 'rating') {
+      truckCount++;
+      if ((row.vehicleType || '').toUpperCase() === 'TRAILER') trailer++;
+      if ((row.vehicleType || '').toUpperCase() === 'CARGO') cargo++;
+    }
+  });
+
+  document.getElementById('analytics-box').innerHTML = `
+    <strong>Map Analytics</strong><br>
+    Total Warehouses: ${warehouseCount.size}<br>
+    Total Trucks/Rates: ${truckCount}<br><br>
+    <strong>Vehicle Types</strong><br>
+    CARGO: ${cargo}<br>
+    TRAILER: ${trailer}<br>
+  `;
+}
