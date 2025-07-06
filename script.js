@@ -22,7 +22,8 @@ const warehouseColors = {
 
 // Get assigned color (warehouse or truck)
 function getColor(id) {
-  return warehouseColors[(id || '').trim().toUpperCase()] || '#999';
+  const key = (id || '').trim().toUpperCase();  // 🔁 Normalize
+  return warehouseColors[key] || '#999';        // Return color if matched, else gray
 }
 
 // Create map icon
