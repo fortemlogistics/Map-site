@@ -20,7 +20,16 @@
 </head>
 <body>
 
-  <h2>Logistics Map</h2>
+  <header class="top-navbar">
+  <div class="header-title">Fortem Cement Logistics Map PH</div>
+  <nav class="header-menu">
+    <button onclick="toggleAnalytics()">Toggle Analytics</button>
+    <button onclick="toggleFilters()">Toggle Filters</button>
+    <button onclick="toggleImport()">Toggle Import/Update</button>
+    <button onclick="exportAllData()">Export All Data</button>
+    <button onclick="showHelp()">Help</button>
+  </nav>
+</header>
   <input type="file" id="csv-file" accept=".csv" />
   <div id="map"></div>
 

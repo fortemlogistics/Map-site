@@ -203,3 +203,23 @@ function updateAnalytics(data) {
     TRAILER: ${trailer}<br>
   `;
 }
+function toggleAnalytics() {
+  document.getElementById('analytics-box').style.display =
+    document.getElementById('analytics-box').style.display === 'none' ? 'block' : 'none';
+}
+
+function toggleFilters() {
+  alert("Toggle Filters clicked.");
+}
+
+function toggleImport() {
+  alert("Toggle Import/Update clicked.");
+}
+
+function exportAllData() {
+  alert("Export All Data clicked.");
+}
+
+function showHelp() {
+  alert("Help clicked.");
+}
