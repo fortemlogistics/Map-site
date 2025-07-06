@@ -149,6 +149,8 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function updateAnalytics(data) {
+  console.log('✅ updateAnalytics called. Data rows:', data.length);  // DEBUG LINE
+
   const warehouseCount = new Set();
   let truckCount = 0;
   let trailer = 0;
@@ -164,6 +166,27 @@ function updateAnalytics(data) {
       if (vType === 'CARGO') cargo++;
     }
   });
+
+  const hasLinks = truckCount > 0;
+
+  const analyticsBox = document.getElementById('analytics-box');
+  if (analyticsBox) {
+    analyticsBox.innerHTML = `
+      <strong>📊 Map Analytics</strong><br>
+      Total Warehouses: ${warehouseCount.size}<br>
+      Total Trucks/Rates: ${truckCount}<br><br>
+
+      <strong>🏭 Warehouse Details</strong><br>
+      ${hasLinks ? 'Warehouses linked to trucks/rates available.' : 'No trucks/rates linked to warehouses yet.'}<br><br>
+
+      <strong>🚚 Vehicle Types</strong><br>
+      CARGO: ${cargo}<br>
+      TRAILER: ${trailer}<br>
+    `;
+  } else {
+    console.warn('⚠️ #analytics-box not found in DOM.');
+  }
+}
 
   const hasLinks = truckCount > 0;
 
