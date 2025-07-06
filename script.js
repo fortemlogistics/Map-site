@@ -52,13 +52,20 @@ document.getElementById('csv-file').addEventListener('change', function (e) {
   if (!file) return;
 
   Papa.parse(file, {
-    header: true,
-    skipEmptyLines: true,
-    transformHeader: h => h.trim().replace(/\r/g, ''),
-    complete: function (results) {
-      const data = results.data;
-      const timestamp = getCurrentTimestamp();
-      markerClusterGroup.clearLayers();
+  header: true,
+  skipEmptyLines: true,
+  transformHeader: h => h.trim().replace(/\r/g, ''),
+  complete: function (results) {
+    const data = results.data;
+    const timestamp = getCurrentTimestamp();
+
+    markerClusterGroup.clearLayers();
+    plotData(data);             // <- You probably have this
+    updateAnalytics(data);      // ✅ Add this line to update the analytics content
+
+    allData = allData.concat(data); // If you're tracking all uploaded data
+  }
+});
 
       data.forEach(row => {
         const {
