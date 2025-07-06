@@ -8,7 +8,7 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 const markerClusterGroup = L.markerClusterGroup();
 map.addLayer(markerClusterGroup);
 
-// ✅ Define fixed warehouse colors
+// ✅ Fixed colors for warehouses
 const warehouseColors = {
   'L07': 'blue',
   'L08': 'red',
@@ -20,13 +20,13 @@ const warehouseColors = {
   'M01': 'black'
 };
 
-// ✅ Get color from warehouse ID
+// ✅ Color getter
 function getColor(id) {
   const key = (id || '').trim().toUpperCase();
   return warehouseColors[key] || '#999';
 }
 
-// ✅ Create map icon
+// ✅ Icon builder
 function createIcon(iconType, color) {
   return L.divIcon({
     html: `<div style="color:${color}; font-size:30px;">
@@ -38,7 +38,7 @@ function createIcon(iconType, color) {
   });
 }
 
-// ✅ Format current PH timestamp
+// ✅ Timestamp formatter
 function getCurrentTimestamp() {
   const now = new Date();
   return now.toLocaleString('en-PH', {
@@ -48,7 +48,7 @@ function getCurrentTimestamp() {
   });
 }
 
-// ✅ Upload CSV and render map
+// ✅ Handle CSV upload
 document.getElementById('csv-file').addEventListener('change', function (e) {
   const file = e.target.files[0];
   if (!file) return;
@@ -56,13 +56,11 @@ document.getElementById('csv-file').addEventListener('change', function (e) {
   Papa.parse(file, {
     header: true,
     skipEmptyLines: true,
-    transformHeader: header => header.trim().replace(/\r/g, ''),
+    transformHeader: h => h.trim().replace(/\r/g, ''),
     complete: function (results) {
       const data = results.data;
       const timestamp = getCurrentTimestamp();
       markerClusterGroup.clearLayers();
-
-      console.log("✅ CSV Loaded", data);
 
       data.forEach(row => {
         const {
@@ -78,11 +76,15 @@ document.getElementById('csv-file').addEventListener('change', function (e) {
         let color = '#999';
         let iconType = 'fa-box';
 
-        if ((type || '').trim().toLowerCase() === 'warehouse') {
+        const isWarehouse = (type || '').trim().toLowerCase() === 'warehouse';
+
+        if (isWarehouse) {
+          // ✅ Use label (e.g., L07) to determine warehouse color
           const warehouseId = (originWarehouseId || '').trim().toUpperCase();
           color = getColor(warehouseId);
           iconType = 'fa-warehouse';
         } else {
+          // ✅ Use originWarehouseId for trucks
           const originId = (originWarehouseId || '').trim().toUpperCase();
           color = getColor(originId);
           iconType = 'fa-truck';
@@ -104,14 +106,11 @@ document.getElementById('csv-file').addEventListener('change', function (e) {
 
         markerClusterGroup.addLayer(marker);
       });
-    },
-    error: function (err) {
-      console.error("❌ Error parsing CSV:", err);
     }
   });
 });
 
-// ✅ Add color legend to map
+// ✅ Legend
 const legend = L.control({ position: 'bottomright' });
 legend.onAdd = function () {
   const div = L.DomUtil.create('div', 'legend');
@@ -124,4 +123,5 @@ legend.onAdd = function () {
   return div;
 };
 legend.addTo(map);
+
 
