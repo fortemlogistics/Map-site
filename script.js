@@ -53,59 +53,57 @@ document.getElementById('csv-file').addEventListener('change', function (e) {
   const file = e.target.files[0];
 
   Papa.parse(file, {
-    header: true,
-    skipEmptyLines: true,
-    transformHeader: header => {
-      const cleaned = header.trim().replace(/\r/g, '');
-      return cleaned;
-    },
-    complete: function (results) {
-      markerClusterGroup.clearLayers();
-      const timestamp = getCurrentTimestamp();
-      const data = results.data;
+  header: true,
+  skipEmptyLines: true,
+  transformHeader: header => header.trim().replace(/\r/g, ''),
+  complete: function (results) {
+    markerClusterGroup.clearLayers();
+    const timestamp = getCurrentTimestamp();  // ✅ Must be here
+    const data = results.data;
 
-      data.forEach(row => {
-        const {
-          lat, lng, label, type,
-          originWarehouseId, destination,
-          rateValue, quantityMT, vehicleType
-        } = row;
+    console.log("✅ CSV loaded:", data[0]);
 
-        const latitude = parseFloat(lat);
-        const longitude = parseFloat(lng);
-        if (isNaN(latitude) || isNaN(longitude)) return;
+    data.forEach(row => {
+      const {
+        lat, lng, label, type,
+        originWarehouseId, destination,
+        rateValue, quantityMT, vehicleType
+      } = row;
 
-        let color = '#999';
-        let iconType = 'fa-box';
+      const latitude = parseFloat(lat);
+      const longitude = parseFloat(lng);
+      if (isNaN(latitude) || isNaN(longitude)) return;
 
-        if (type === 'warehouse') {
-          const warehouseId = (originWarehouseId || '').trim().toUpperCase();
-          color = getColor(warehouseId);
-          iconType = 'fa-warehouse';
-        } else {
-          const originId = (originWarehouseId || '').trim().toUpperCase();
-          color = getColor(originId);
-          iconType = 'fa-truck';
-        }
+      let color = '#999';
+      let iconType = 'fa-box';
 
-        const popup = `
-          <b>${label}</b><br>
-          Destination: ${destination || 'N/A'}<br>
-          Price: ${rateValue || 'N/A'}<br>
-          Quantity (MT): ${quantityMT || 'N/A'}<br>
-          Vehicle: ${vehicleType || 'N/A'}<br>
-          Created: ${timestamp}<br>
-          Updated: ${timestamp}
-        `;
+      if (type === 'warehouse') {
+        const warehouseId = (originWarehouseId || '').trim().toUpperCase();
+        color = getColor(warehouseId);
+        iconType = 'fa-warehouse';
+      } else {
+        const originId = (originWarehouseId || '').trim().toUpperCase();
+        color = getColor(originId);
+        iconType = 'fa-truck';
+      }
 
-        const marker = L.marker([latitude, longitude], {
-          icon: createIcon(iconType, color)
-        }).bindPopup(popup);
+      const popup = `
+        <b>${label}</b><br>
+        Destination: ${destination || 'N/A'}<br>
+        Price: ${rateValue || 'N/A'}<br>
+        Quantity (MT): ${quantityMT || 'N/A'}<br>
+        Vehicle: ${vehicleType || 'N/A'}<br>
+        Created: ${timestamp}<br>
+        Updated: ${timestamp}
+      `;
 
-        markerClusterGroup.addLayer(marker);
-      });
-    }
-  });
+      const marker = L.marker([latitude, longitude], {
+        icon: createIcon(iconType, color)
+      }).bindPopup(popup);
+
+      markerClusterGroup.addLayer(marker);
+    });
+  }
 });
 
 // Add color legend
