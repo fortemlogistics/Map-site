@@ -20,15 +20,10 @@ const warehouseColors = {
   'M01': 'black'
 };
 
-// Get assigned color (warehouse or truck)
-if (type === 'warehouse') {
-  color = getColor(label);
-  iconType = 'fa-warehouse';
-} else {
-  // ✅ Fix for hidden \r or invisible characters in CSV headers
-  const originId = row["originWarehouseId"] || row["originWarehouseId\r"] || row["originWarehouseId﻿"] || '';
-  color = getColor(originId);
-  iconType = 'fa-truck';
+// ✅ Safe color lookup
+function getColor(id) {
+  const key = (id || '').trim().toUpperCase();
+  return warehouseColors[key] || '#999';
 }
 
 // Create map icon
@@ -65,48 +60,52 @@ document.getElementById('csv-file').addEventListener('change', function (e) {
       const timestamp = getCurrentTimestamp();
       const data = results.data;
 
-      // Place markers
+      // 🔍 Debug headers
       console.log("CSV headers:", Object.keys(data[0]));
+
       data.forEach(row => {
-  const {
-    lat, lng, label, type,
-    destination, rateValue, quantityMT, vehicleType
-  } = row;
+        const {
+          lat, lng, label, type,
+          destination, rateValue, quantityMT, vehicleType
+        } = row;
 
-  // 🛠 Fix origin ID with possible hidden characters
-  const originId = row["originWarehouseId"] || row["originWarehouseId\r"] || row["originWarehouseId﻿"] || '';
+        const originId = row["originWarehouseId"] || row["originWarehouseId\r"] || row["originWarehouseId﻿"] || '';
 
-  const latitude = parseFloat(lat);
-  const longitude = parseFloat(lng);
-  if (isNaN(latitude) || isNaN(longitude)) return;
+        const latitude = parseFloat(lat);
+        const longitude = parseFloat(lng);
+        if (isNaN(latitude) || isNaN(longitude)) return;
 
-  let color = '#999';
-  let iconType = 'fa-box';
+        let color = '#999';
+        let iconType = 'fa-box';
 
-  if (type === 'warehouse') {
-    color = getColor(label);
-    iconType = 'fa-warehouse';
-  } else {
-    color = getColor(originId);
-    iconType = 'fa-truck';
-  }
+        if (type === 'warehouse') {
+          color = getColor(label);
+          iconType = 'fa-warehouse';
+        } else {
+          color = getColor(originId);
+          iconType = 'fa-truck';
+        }
 
-  const popup = `
-    <b>${label}</b><br>
-    Destination: ${destination || 'N/A'}<br>
-    Price: ${rateValue || 'N/A'}<br>
-    Quantity (MT): ${quantityMT || 'N/A'}<br>
-    Vehicle: ${vehicleType || 'N/A'}<br>
-    Created: ${timestamp}<br>
-    Updated: ${timestamp}
-  `;
+        const popup = `
+          <b>${label}</b><br>
+          Destination: ${destination || 'N/A'}<br>
+          Price: ${rateValue || 'N/A'}<br>
+          Quantity (MT): ${quantityMT || 'N/A'}<br>
+          Vehicle: ${vehicleType || 'N/A'}<br>
+          Created: ${timestamp}<br>
+          Updated: ${timestamp}
+        `;
 
-  const marker = L.marker([latitude, longitude], {
-    icon: createIcon(iconType, color)
-  }).bindPopup(popup);
+        const marker = L.marker([latitude, longitude], {
+          icon: createIcon(iconType, color)
+        }).bindPopup(popup);
 
-  markerClusterGroup.addLayer(marker);
+        markerClusterGroup.addLayer(marker);
+      });
+    }
+  });
 });
+
 // ✅ Add legend to the map
 const legend = L.control({ position: 'bottomright' });
 
