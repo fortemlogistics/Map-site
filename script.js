@@ -3,13 +3,12 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '© OpenStreetMap'
 }).addTo(map);
 
-// Add cluster group to the map
+// Marker clustering
 const markerClusterGroup = L.markerClusterGroup();
 map.addLayer(markerClusterGroup);
 
-// Unique colors per warehouse
+// Assign colors to warehouses
 const warehouseColors = {};
-
 function getColorForWarehouse(id) {
   if (!warehouseColors[id]) {
     warehouseColors[id] = '#' + Math.floor(Math.random() * 16777215).toString(16);
@@ -17,15 +16,15 @@ function getColorForWarehouse(id) {
   return warehouseColors[id];
 }
 
-// Create a colored icon using Font Awesome
+// Bigger Font Awesome icon with color
 function createIcon(iconType, color) {
   return L.divIcon({
-    html: `<div style="color:${color}; font-size:22px;">
+    html: `<div style="color:${color}; font-size:30px;">
              <i class="fas ${iconType}"></i>
            </div>`,
     className: 'custom-icon',
-    iconSize: [30, 30],
-    iconAnchor: [15, 15]
+    iconSize: [40, 40],
+    iconAnchor: [20, 20]
   });
 }
 
@@ -34,7 +33,7 @@ document.getElementById('csv-file').addEventListener('change', function (e) {
   const reader = new FileReader();
 
   reader.onload = function () {
-    markerClusterGroup.clearLayers(); // clear old markers
+    markerClusterGroup.clearLayers();
     const lines = reader.result.trim().split('\n');
     const headers = lines[0].split(',');
 
@@ -45,29 +44,41 @@ document.getElementById('csv-file').addEventListener('change', function (e) {
         row[h.trim()] = values[idx]?.trim();
       });
 
-      const lat = parseFloat(row.lat);
-      const lng = parseFloat(row.lng);
-      const label = row.label;
-      const type = row.type;
-      const originId = row.originWarehouseId;
+      const {
+        lat, lng, label, destination, rateValue,
+        quantity, vehicleType, createdAt, updatedAt,
+        type, originWarehouseId
+      } = row;
 
-      if (isNaN(lat) || isNaN(lng)) continue;
+      const latitude = parseFloat(lat);
+      const longitude = parseFloat(lng);
+      if (isNaN(latitude) || isNaN(longitude)) continue;
 
-      // Set color and icon
       let color = '#999';
-      let iconType = 'fa-box'; // fallback icon
+      let iconType = 'fa-box';
 
       if (type === 'warehouse') {
         color = getColorForWarehouse(label);
         iconType = 'fa-warehouse';
       } else {
-        color = getColorForWarehouse(originId);
+        color = getColorForWarehouse(originWarehouseId);
         iconType = 'fa-truck';
       }
 
-      const marker = L.marker([lat, lng], {
+      // Popup content
+      const popup = `
+        <b>${label}</b><br>
+        Destination: ${destination || 'N/A'}<br>
+        Price: ${rateValue || 'N/A'}<br>
+        Quantity (MT): ${quantity || 'N/A'}<br>
+        Vehicle: ${vehicleType || 'N/A'}<br>
+        Created: ${createdAt || 'N/A'}<br>
+        Updated: ${updatedAt || 'N/A'}
+      `;
+
+      const marker = L.marker([latitude, longitude], {
         icon: createIcon(iconType, color)
-      }).bindPopup(`<b>${type.toUpperCase()}</b><br>${label}`);
+      }).bindPopup(popup);
 
       markerClusterGroup.addLayer(marker);
     }
@@ -75,5 +86,3 @@ document.getElementById('csv-file').addEventListener('change', function (e) {
 
   reader.readAsText(file);
 });
-
-
