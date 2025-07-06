@@ -1,4 +1,6 @@
+console.log("✅ script.js loaded");
 const map = L.map('map').setView([13.41, 122.56], 6);
+L.marker([13.41, 122.56]).addTo(map).bindPopup("📍 Test Marker").openPopup();
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '© OpenStreetMap'
 }).addTo(map);
