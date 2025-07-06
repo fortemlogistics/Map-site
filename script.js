@@ -7,7 +7,7 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 const markerClusterGroup = L.markerClusterGroup();
 map.addLayer(markerClusterGroup);
 
-// Assign colors to warehouses
+// Unique colors per warehouse
 const warehouseColors = {};
 function getColorForWarehouse(id) {
   if (!warehouseColors[id]) {
@@ -16,7 +16,7 @@ function getColorForWarehouse(id) {
   return warehouseColors[id];
 }
 
-// Bigger Font Awesome icon with color
+// Custom icon generator
 function createIcon(iconType, color) {
   return L.divIcon({
     html: `<div style="color:${color}; font-size:30px;">
@@ -45,9 +45,8 @@ document.getElementById('csv-file').addEventListener('change', function (e) {
       });
 
       const {
-        lat, lng, label, destination, rateValue,
-        quantity, vehicleType, createdAt, updatedAt,
-        type, originWarehouseId
+        lat, lng, label, type, originWarehouseId,
+        destination, rateValue, quantityMT, vehicleType
       } = row;
 
       const latitude = parseFloat(lat);
@@ -55,7 +54,7 @@ document.getElementById('csv-file').addEventListener('change', function (e) {
       if (isNaN(latitude) || isNaN(longitude)) continue;
 
       let color = '#999';
-      let iconType = 'fa-box';
+      let iconType = 'fa-box'; // default
 
       if (type === 'warehouse') {
         color = getColorForWarehouse(label);
@@ -65,15 +64,12 @@ document.getElementById('csv-file').addEventListener('change', function (e) {
         iconType = 'fa-truck';
       }
 
-      // Popup content
       const popup = `
         <b>${label}</b><br>
         Destination: ${destination || 'N/A'}<br>
         Price: ${rateValue || 'N/A'}<br>
-        Quantity (MT): ${quantity || 'N/A'}<br>
-        Vehicle: ${vehicleType || 'N/A'}<br>
-        Created: ${createdAt || 'N/A'}<br>
-        Updated: ${updatedAt || 'N/A'}
+        Quantity (MT): ${quantityMT || 'N/A'}<br>
+        Vehicle: ${vehicleType || 'N/A'}
       `;
 
       const marker = L.marker([latitude, longitude], {
