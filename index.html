@@ -23,21 +23,25 @@
 </head>
 <body>
   <header class="top-navbar">
-    <div>Fortem Cement Logistics Map PH</div>
-    <nav class="header-menu">
-      <button onclick="toggleAnalytics()">Analytics</button>
-      <button onclick="toggleFilters()">Filters</button>
-      <button onclick="toggleImport()">Import/Update</button>
-      <button onclick="exportAllData()">Export All Data</button>
-      <button onclick="showHelp()">Help</button>
-    </nav>
-  </header>
+  <div>Fortem Cement Logistics Map PH</div>
+  <nav class="header-menu">
+    <button onclick="toggleAnalytics()">Analytics</button>
+    <button onclick="toggleFilters()">Filters</button>
+    <button onclick="toggleImport()">Import/Update</button>
+    <button onclick="exportAllData()">Export All Data</button>
+    <button onclick="showHelp()">Help</button>
+  </nav>
+</header>
 
-  <!-- ✅ CSV Upload input -->
-  <input type="file" id="csv-file" accept=".csv" />
+<!-- ✅ CSV Upload input -->
+<input type="file" id="csv-file" accept=".csv" />
 
-  <!-- 🗺️ Map container -->
-  <div id="map"></div>
+<!-- ✅ Analytics panel (organized, clean, top area) -->
+<div id="analytics-box" style="display: none;"></div>
+
+<!-- 🗺️ Map container -->
+<div id="map"></div>
+
 </body>
 
 <script src="script.js"></script>

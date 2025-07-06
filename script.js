@@ -133,7 +133,7 @@ document.addEventListener("DOMContentLoaded", () => {
   };
   legend.addTo(map);
 
- const analyticsToggleControl = L.control({ position: 'bottomleft' });
+ const analyticsToggleControl = L.control({ position: 'top' });
 analyticsToggleControl.onAdd = function () {
   const div = L.DomUtil.create('div', 'analytics-toggle');
   div.innerHTML = `
@@ -145,7 +145,7 @@ analyticsToggleControl.onAdd = function () {
 analyticsToggleControl.addTo(map);
 
   // Set toggle functionality
- window.toggleAnalytics = function () {
+ wwindow.toggleAnalytics = function () {
   const box = document.getElementById('analytics-box');
   if (box) {
     if (box.innerHTML.trim() !== '') {
