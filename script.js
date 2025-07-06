@@ -66,45 +66,46 @@ document.getElementById('csv-file').addEventListener('change', function (e) {
       const data = results.data;
 
       // Place markers
+      console.log("CSV headers:", Object.keys(data[0]));
       data.forEach(row => {
-        const {
-          lat, lng, label, type, originWarehouseId,
-          destination, rateValue, quantityMT, vehicleType
-        } = row;
+  const {
+    lat, lng, label, type,
+    destination, rateValue, quantityMT, vehicleType
+  } = row;
 
-        const latitude = parseFloat(lat);
-        const longitude = parseFloat(lng);
-        if (isNaN(latitude) || isNaN(longitude)) return;
+  // 🛠 Fix origin ID with possible hidden characters
+  const originId = row["originWarehouseId"] || row["originWarehouseId\r"] || row["originWarehouseId﻿"] || '';
 
-        let color = '#999';
-        let iconType = 'fa-box';
+  const latitude = parseFloat(lat);
+  const longitude = parseFloat(lng);
+  if (isNaN(latitude) || isNaN(longitude)) return;
 
-        if (type === 'warehouse') {
-          color = getColor(label);
-          iconType = 'fa-warehouse';
-        } else {
-          color = getColor(originWarehouseId);
-          iconType = 'fa-truck';
-        }
+  let color = '#999';
+  let iconType = 'fa-box';
 
-        const popup = `
-          <b>${label}</b><br>
-          Destination: ${destination || 'N/A'}<br>
-          Price: ${rateValue || 'N/A'}<br>
-          Quantity (MT): ${quantityMT || 'N/A'}<br>
-          Vehicle: ${vehicleType || 'N/A'}<br>
-          Created: ${timestamp}<br>
-          Updated: ${timestamp}
-        `;
+  if (type === 'warehouse') {
+    color = getColor(label);
+    iconType = 'fa-warehouse';
+  } else {
+    color = getColor(originId);
+    iconType = 'fa-truck';
+  }
 
-        const marker = L.marker([latitude, longitude], {
-          icon: createIcon(iconType, color)
-        }).bindPopup(popup);
+  const popup = `
+    <b>${label}</b><br>
+    Destination: ${destination || 'N/A'}<br>
+    Price: ${rateValue || 'N/A'}<br>
+    Quantity (MT): ${quantityMT || 'N/A'}<br>
+    Vehicle: ${vehicleType || 'N/A'}<br>
+    Created: ${timestamp}<br>
+    Updated: ${timestamp}
+  `;
 
-        markerClusterGroup.addLayer(marker);
-      });
-    }
-  });
+  const marker = L.marker([latitude, longitude], {
+    icon: createIcon(iconType, color)
+  }).bindPopup(popup);
+
+  markerClusterGroup.addLayer(marker);
 });
 // ✅ Add legend to the map
 const legend = L.control({ position: 'bottomright' });
