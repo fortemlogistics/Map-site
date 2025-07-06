@@ -1,6 +1,10 @@
 console.log("✅ script.js loaded");
+
 const map = L.map('map').setView([13.41, 122.56], 6);
+
+// Test marker (you can remove this later)
 L.marker([13.41, 122.56]).addTo(map).bindPopup("📍 Test Marker").openPopup();
+
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '© OpenStreetMap'
 }).addTo(map);
@@ -9,7 +13,7 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 const markerClusterGroup = L.markerClusterGroup();
 map.addLayer(markerClusterGroup);
 
-// Color per warehouse
+// Warehouse color store
 const warehouseColors = {};
 function getColorForWarehouse(id) {
   if (!warehouseColors[id]) {
@@ -18,7 +22,7 @@ function getColorForWarehouse(id) {
   return warehouseColors[id];
 }
 
-// Icon generator
+// Icon generator (truck or warehouse)
 function createIcon(iconType, color) {
   return L.divIcon({
     html: `<div style="color:${color}; font-size:30px;">
@@ -30,7 +34,7 @@ function createIcon(iconType, color) {
   });
 }
 
-// Format timestamp
+// Timestamp formatter
 function getCurrentTimestamp() {
   const now = new Date();
   return now.toLocaleString('en-PH', {
@@ -40,6 +44,7 @@ function getCurrentTimestamp() {
   });
 }
 
+// CSV Upload and Parsing
 document.getElementById('csv-file').addEventListener('change', function (e) {
   const file = e.target.files[0];
 
@@ -49,8 +54,17 @@ document.getElementById('csv-file').addEventListener('change', function (e) {
     complete: function (results) {
       markerClusterGroup.clearLayers();
       const timestamp = getCurrentTimestamp();
+      const data = results.data;
 
-      results.data.forEach(row => {
+      // ✅ First loop: Assign color to each warehouse before rendering
+      data.forEach(row => {
+        if (row.type === 'warehouse' && row.label) {
+          getColorForWarehouse(row.label);
+        }
+      });
+
+      // ✅ Second loop: Create markers for both trucks and warehouses
+      data.forEach(row => {
         const {
           lat, lng, label, type, originWarehouseId,
           destination, rateValue, quantityMT, vehicleType
@@ -61,13 +75,13 @@ document.getElementById('csv-file').addEventListener('change', function (e) {
         if (isNaN(latitude) || isNaN(longitude)) return;
 
         let color = '#999';
-        let iconType = 'fa-box';
+        let iconType = 'fa-box'; // default
 
         if (type === 'warehouse') {
           color = getColorForWarehouse(label);
           iconType = 'fa-warehouse';
         } else {
-          color = getColorForWarehouse(originWarehouseId);
+          color = getColorForWarehouse(originWarehouseId); // truck uses warehouse color
           iconType = 'fa-truck';
         }
 
