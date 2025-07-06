@@ -136,7 +136,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
  let analyticsDataAvailable = false; // Track if analytics is ready
 
-// Set toggle functionality
+// ✅ Correct toggle function
 window.toggleAnalytics = function () {
   const box = document.getElementById('analytics-box');
   if (!analyticsDataAvailable) {
@@ -148,6 +148,7 @@ window.toggleAnalytics = function () {
   }
 };
 
+// ✅ Update analytics after CSV upload
 function updateAnalytics(data) {
   const warehouseCount = new Set();
   let truckCount = 0;
@@ -166,8 +167,8 @@ function updateAnalytics(data) {
   });
 
   const hasLinks = truckCount > 0;
-
   const analyticsBox = document.getElementById('analytics-box');
+
   if (analyticsBox) {
     analyticsBox.innerHTML = `
       <strong>📊 Map Analytics</strong><br>
@@ -181,21 +182,12 @@ function updateAnalytics(data) {
       CARGO: ${cargo}<br>
       TRAILER: ${trailer}<br>
     `;
-    analyticsDataAvailable = true; // ✅ Now allow toggleAnalytics to work
+    analyticsDataAvailable = true; // ✅ Now we can toggle it
   }
 }
 
-
-  // Optional: stub functions for UI buttons
-  window.toggleAnalytics = function () {
-    const box = document.getElementById('analytics-box');
-    if (box) {
-      box.style.display = box.style.display === 'none' ? 'block' : 'none';
-    }
-  }
-
-  window.toggleFilters = () => alert("Toggle Filters clicked.");
-  window.toggleImport = () => alert("Toggle Import/Update clicked.");
-  window.exportAllData = () => alert("Export All Data clicked.");
-  window.showHelp = () => alert("Help clicked.");
-});
+// ✅ Optional UI stubs
+window.toggleFilters = () => alert("Toggle Filters clicked.");
+window.toggleImport = () => alert("Toggle Import/Update clicked.");
+window.exportAllData = () => alert("Export All Data clicked.");
+window.showHelp = () => alert("Help clicked.");
