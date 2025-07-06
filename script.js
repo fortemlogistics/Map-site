@@ -123,18 +123,22 @@ const analyticsToggleControl = L.control({ position: 'bottomleft' });
 analyticsToggleControl.onAdd = function () {
   const div = L.DomUtil.create('div', 'analytics-toggle');
   div.innerHTML = `
-    <button id="toggle-analytics" style="padding: 6px;">📊 Analytics</button>
-    <div id="analytics-box" style="display: none;"></div>
+    <button id="toggle-analytics" style="padding: 6px; font-size: 14px;">📊 Analytics</button>
+    <div id="analytics-box" style="display: none; background: white; padding: 8px; margin-top: 6px; border-radius: 4px; box-shadow: 0 1px 4px rgba(0,0,0,0.3); font-size: 13px;"></div>
   `;
   return div;
 };
 analyticsToggleControl.addTo(map);
 
+
 document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('toggle-analytics').addEventListener('click', () => {
-    const box = document.getElementById('analytics-box');
-    box.style.display = box.style.display === 'none' ? 'block' : 'none';
-  });
+  const analyticsBtn = document.getElementById('toggle-analytics');
+  if (analyticsBtn) {
+    analyticsBtn.addEventListener('click', () => {
+      const box = document.getElementById('analytics-box');
+      box.style.display = box.style.display === 'none' ? 'block' : 'none';
+    });
+  }
 });
 
 function updateAnalytics(data) {
