@@ -8,7 +8,7 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 const markerClusterGroup = L.markerClusterGroup();
 map.addLayer(markerClusterGroup);
 
-// ✅ Fixed colors for specific warehouses
+// Fixed colors for specific warehouses
 const warehouseColors = {
   'L07': 'blue',
   'L08': 'red',
@@ -20,13 +20,13 @@ const warehouseColors = {
   'M01': 'black'
 };
 
-// ✅ Safe color lookup
+// Get color from warehouse ID
 function getColor(id) {
   const key = (id || '').trim().toUpperCase();
-  return warehouseColors[key] || '#999';
+  return warehouseColors[key] || '#999'; // default gray if unknown
 }
 
-// Create map icon
+// Create custom icon
 function createIcon(iconType, color) {
   return L.divIcon({
     html: `<div style="color:${color}; font-size:30px;">
@@ -38,7 +38,7 @@ function createIcon(iconType, color) {
   });
 }
 
-// Format timestamp
+// Format PH timestamp
 function getCurrentTimestamp() {
   const now = new Date();
   return now.toLocaleString('en-PH', {
@@ -48,28 +48,27 @@ function getCurrentTimestamp() {
   });
 }
 
-// Load CSV
+// Handle CSV upload
 document.getElementById('csv-file').addEventListener('change', function (e) {
   const file = e.target.files[0];
 
   Papa.parse(file, {
     header: true,
     skipEmptyLines: true,
+    transformHeader: header => header.trim().replace(/\r/g, ""), // clean \r characters
     complete: function (results) {
       markerClusterGroup.clearLayers();
       const timestamp = getCurrentTimestamp();
       const data = results.data;
 
-      // 🔍 Debug headers
-      console.log("CSV headers:", Object.keys(data[0]));
+      console.log("✅ Cleaned Headers:", Object.keys(data[0]));
 
       data.forEach(row => {
         const {
           lat, lng, label, type,
-          destination, rateValue, quantityMT, vehicleType
+          originWarehouseId, destination,
+          rateValue, quantityMT, vehicleType
         } = row;
-
-        const originId = row["originWarehouseId"] || row["originWarehouseId\r"] || row["originWarehouseId﻿"] || '';
 
         const latitude = parseFloat(lat);
         const longitude = parseFloat(lng);
@@ -82,7 +81,7 @@ document.getElementById('csv-file').addEventListener('change', function (e) {
           color = getColor(label);
           iconType = 'fa-warehouse';
         } else {
-          color = getColor(originId);
+          color = getColor(originWarehouseId);
           iconType = 'fa-truck';
         }
 
@@ -106,13 +105,13 @@ document.getElementById('csv-file').addEventListener('change', function (e) {
   });
 });
 
-// ✅ Add legend to the map
+// Add color legend
 const legend = L.control({ position: 'bottomright' });
 
 legend.onAdd = function () {
   const div = L.DomUtil.create('div', 'legend');
   div.innerHTML = '<strong>📦 Warehouse Colors</strong><br>';
-  
+
   for (const [id, color] of Object.entries(warehouseColors)) {
     div.innerHTML += `
       <i style="background:${color}; width:12px; height:12px; display:inline-block; margin-right:6px; border-radius:50%;"></i>
