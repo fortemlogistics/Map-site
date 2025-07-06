@@ -8,7 +8,7 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 const markerClusterGroup = L.markerClusterGroup();
 map.addLayer(markerClusterGroup);
 
-// ✅ Fixed colors for warehouses
+// 🎨 Fixed warehouse color assignments
 const warehouseColors = {
   'L07': 'blue',
   'L08': 'red',
@@ -20,25 +20,23 @@ const warehouseColors = {
   'M01': 'black'
 };
 
-// ✅ Color getter
+// 🟢 Get color from warehouse ID
 function getColor(id) {
   const key = (id || '').trim().toUpperCase();
   return warehouseColors[key] || '#999';
 }
 
-// ✅ Icon builder
+// 🛠️ Create map icon
 function createIcon(iconType, color) {
   return L.divIcon({
-    html: `<div style="color:${color}; font-size:30px;">
-             <i class="fas ${iconType}"></i>
-           </div>`,
+    html: `<div style="color:${color}; font-size:30px;"><i class="fas ${iconType}"></i></div>`,
     className: 'custom-icon',
     iconSize: [40, 40],
     iconAnchor: [20, 20]
   });
 }
 
-// ✅ Timestamp formatter
+// ⏰ Format timestamp
 function getCurrentTimestamp() {
   const now = new Date();
   return now.toLocaleString('en-PH', {
@@ -48,7 +46,7 @@ function getCurrentTimestamp() {
   });
 }
 
-// ✅ Handle CSV upload
+// 📦 Handle CSV upload
 document.getElementById('csv-file').addEventListener('change', function (e) {
   const file = e.target.files[0];
   if (!file) return;
@@ -76,16 +74,13 @@ document.getElementById('csv-file').addEventListener('change', function (e) {
         let color = '#999';
         let iconType = 'fa-box';
 
-        const isWarehouse = (type || '').trim().toLowerCase() === 'warehouse';
+        const cleanType = (type || '').trim().toLowerCase();
+        const originId = (originWarehouseId || '').trim().toUpperCase();
 
-        if (isWarehouse) {
-          // ✅ Use label (e.g., L07) to determine warehouse color
-          const warehouseId = (originWarehouseId || '').trim().toUpperCase();
-          color = getColor(warehouseId);
+        if (cleanType === 'warehouse') {
+          color = getColor(originId);
           iconType = 'fa-warehouse';
         } else {
-          // ✅ Use originWarehouseId for trucks
-          const originId = (originWarehouseId || '').trim().toUpperCase();
           color = getColor(originId);
           iconType = 'fa-truck';
         }
@@ -110,7 +105,7 @@ document.getElementById('csv-file').addEventListener('change', function (e) {
   });
 });
 
-// ✅ Legend
+// 🗺️ Add legend
 const legend = L.control({ position: 'bottomright' });
 legend.onAdd = function () {
   const div = L.DomUtil.create('div', 'legend');
@@ -123,5 +118,4 @@ legend.onAdd = function () {
   return div;
 };
 legend.addTo(map);
-
 
