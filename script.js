@@ -23,7 +23,7 @@ const warehouseColors = {
 // Get color from warehouse ID
 function getColor(id) {
   const key = (id || '').trim().toUpperCase();
-  return warehouseColors[key] || '#999'; // default gray if unknown
+  return warehouseColors[key] || '#999';
 }
 
 // Create custom icon
@@ -53,16 +53,16 @@ document.getElementById('csv-file').addEventListener('change', function (e) {
   const file = e.target.files[0];
 
   Papa.parse(file, {
-  header: true,
-  skipEmptyLines: true,
-  transformHeader: header => {
-    const cleaned = header.trim().replace(/\r/g, '');
-    console.log("🧼 Header cleaned:", header, "→", cleaned);
-    return cleaned;
-  },
-  complete: function (results) {
-    console.log("✅ Cleaned Headers Found:", Object.keys(results.data[0]));
-    console.log("📦 First Row Sample:", results.data[0]);
+    header: true,
+    skipEmptyLines: true,
+    transformHeader: header => {
+      const cleaned = header.trim().replace(/\r/g, '');
+      return cleaned;
+    },
+    complete: function (results) {
+      markerClusterGroup.clearLayers();
+      const timestamp = getCurrentTimestamp();
+      const data = results.data;
 
       data.forEach(row => {
         const {
@@ -79,10 +79,12 @@ document.getElementById('csv-file').addEventListener('change', function (e) {
         let iconType = 'fa-box';
 
         if (type === 'warehouse') {
-          color = getColor(label);
+          const warehouseId = (originWarehouseId || '').trim().toUpperCase();
+          color = getColor(warehouseId);
           iconType = 'fa-warehouse';
         } else {
-          color = getColor(originWarehouseId);
+          const originId = (originWarehouseId || '').trim().toUpperCase();
+          color = getColor(originId);
           iconType = 'fa-truck';
         }
 
@@ -123,3 +125,5 @@ legend.onAdd = function () {
 };
 
 legend.addTo(map);
+
+
