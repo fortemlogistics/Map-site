@@ -1,12 +1,9 @@
 #map {
   height: 600px;
   width: 100%;
-  margin-top: 10px;
 }
-body {
-  font-family: Arial, sans-serif;
-  padding: 10px;
+.custom-marker {
+  background-color: transparent;
+  border: none;
 }
-input {
-  margin-bottom: 10px;
-}
+

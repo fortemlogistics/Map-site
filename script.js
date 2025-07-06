@@ -3,13 +3,25 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '© OpenStreetMap'
 }).addTo(map);
 
-const warehouseColors = {};
+// Cluster group
+const markerClusterGroup = L.markerClusterGroup().addTo(map);
 
+// Assign unique colors to each warehouse
+const warehouseColors = {};
 function getColorForWarehouse(id) {
   if (!warehouseColors[id]) {
     warehouseColors[id] = '#' + Math.floor(Math.random() * 16777215).toString(16);
   }
   return warehouseColors[id];
+}
+
+// Create a custom icon with color and icon class
+function createIcon(iconClass, color) {
+  return L.divIcon({
+    html: `<i class="fa-solid ${iconClass}" style="color:${color}; font-size:20px;"></i>`,
+    iconSize: [25, 25],
+    className: 'custom-marker'
+  });
 }
 
 document.getElementById('csv-file').addEventListener('change', function (e) {
@@ -33,28 +45,27 @@ document.getElementById('csv-file').addEventListener('change', function (e) {
       const label = row.label;
       const originId = row.originWarehouseId;
 
-      if (isNaN(lat) || isNaN(lng)) continue; // Skip invalid rows
+      if (isNaN(lat) || isNaN(lng)) continue;
 
-      let color = '#3388ff'; // default blue
+      let color = '#3388ff';
+      let iconClass = 'fa-box'; // default to warehouse
 
       if (type === 'warehouse') {
         color = getColorForWarehouse(label);
+        iconClass = 'fa-warehouse';
       } else if (originId) {
         color = getColorForWarehouse(originId);
+        iconClass = 'fa-truck';
       }
 
-      const radius = type === 'warehouse' ? 10 : 6;
+      const marker = L.marker([lat, lng], {
+        icon: createIcon(iconClass, color)
+      }).bindPopup(`<b>${type.toUpperCase()}</b><br>${label}`);
 
-      L.circleMarker([lat, lng], {
-        radius,
-        color,
-        fillColor: color,
-        fillOpacity: 0.8
-      })
-      .addTo(map)
-      .bindPopup(`<b>${type.toUpperCase()}</b><br>${label}`);
+      markerClusterGroup.addLayer(marker);
     }
   };
 
   reader.readAsText(file);
 });
+
