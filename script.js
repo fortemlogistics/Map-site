@@ -133,16 +133,6 @@ document.addEventListener("DOMContentLoaded", () => {
   };
   legend.addTo(map);
 
- const analyticsToggleControl = L.control({ position: 'top' });
-analyticsToggleControl.onAdd = function () {
-  const div = L.DomUtil.create('div', 'analytics-toggle');
-  div.innerHTML = `
-    <button onclick="toggleAnalytics()" style="padding: 6px; font-size: 14px;">📊 Analytics</button>
-    <div id="analytics-box" style="display: none; background: white; padding: 8px; margin-top: 6px; border-radius: 4px; box-shadow: 0 1px 4px rgba(0,0,0,0.3); font-size: 13px;"></div>
-  `;
-  return div;
-};
-analyticsToggleControl.addTo(map);
 
   // Set toggle functionality
  wwindow.toggleAnalytics = function () {
