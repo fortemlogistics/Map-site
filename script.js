@@ -134,54 +134,57 @@ document.addEventListener("DOMContentLoaded", () => {
   legend.addTo(map);
 
 
-  // Set toggle functionality
- wwindow.toggleAnalytics = function () {
+ let analyticsDataAvailable = false; // Track if analytics is ready
+
+// Set toggle functionality
+window.toggleAnalytics = function () {
   const box = document.getElementById('analytics-box');
+  if (!analyticsDataAvailable) {
+    alert("Please upload a CSV file to view analytics.");
+    return;
+  }
   if (box) {
-    if (box.innerHTML.trim() !== '') {
-      box.style.display = box.style.display === 'none' ? 'block' : 'none';
-    } else {
-      alert("Please upload a CSV file to view analytics.");
-    }
+    box.style.display = box.style.display === 'none' ? 'block' : 'none';
   }
 };
 
+function updateAnalytics(data) {
+  const warehouseCount = new Set();
+  let truckCount = 0;
+  let trailer = 0;
+  let cargo = 0;
 
-  function updateAnalytics(data) {
-    const warehouseCount = new Set();
-    let truckCount = 0;
-    let trailer = 0;
-    let cargo = 0;
-
-    data.forEach(row => {
-      const type = (row.type || '').toLowerCase();
-      if (type === 'warehouse') warehouseCount.add(row.originWarehouseId);
-      if (type === 'rating') {
-        truckCount++;
-        const vType = (row.vehicleType || '').toUpperCase();
-        if (vType === 'TRAILER') trailer++;
-        if (vType === 'CARGO') cargo++;
-      }
-    });
-
-    const hasLinks = truckCount > 0;
-
-    const analyticsBox = document.getElementById('analytics-box');
-    if (analyticsBox) {
-      analyticsBox.innerHTML = `
-        <strong>📊 Map Analytics</strong><br>
-        Total Warehouses: ${warehouseCount.size}<br>
-        Total Trucks/Rates: ${truckCount}<br><br>
-
-        <strong>🏭 Warehouse Details</strong><br>
-        ${hasLinks ? 'Warehouses linked to trucks/rates available.' : 'No trucks/rates linked to warehouses yet.'}<br><br>
-
-        <strong>🚚 Vehicle Types</strong><br>
-        CARGO: ${cargo}<br>
-        TRAILER: ${trailer}<br>
-      `;
+  data.forEach(row => {
+    const type = (row.type || '').toLowerCase();
+    if (type === 'warehouse') warehouseCount.add(row.originWarehouseId);
+    if (type === 'rating') {
+      truckCount++;
+      const vType = (row.vehicleType || '').toUpperCase();
+      if (vType === 'TRAILER') trailer++;
+      if (vType === 'CARGO') cargo++;
     }
+  });
+
+  const hasLinks = truckCount > 0;
+
+  const analyticsBox = document.getElementById('analytics-box');
+  if (analyticsBox) {
+    analyticsBox.innerHTML = `
+      <strong>📊 Map Analytics</strong><br>
+      Total Warehouses: ${warehouseCount.size}<br>
+      Total Trucks/Rates: ${truckCount}<br><br>
+
+      <strong>🏭 Warehouse Details</strong><br>
+      ${hasLinks ? 'Warehouses linked to trucks/rates available.' : 'No trucks/rates linked to warehouses yet.'}<br><br>
+
+      <strong>🚚 Vehicle Types</strong><br>
+      CARGO: ${cargo}<br>
+      TRAILER: ${trailer}<br>
+    `;
+    analyticsDataAvailable = true; // ✅ Now allow toggleAnalytics to work
   }
+}
+
 
   // Optional: stub functions for UI buttons
   window.toggleAnalytics = function () {
