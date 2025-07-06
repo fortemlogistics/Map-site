@@ -30,55 +30,51 @@ function createIcon(iconType, color) {
 
 document.getElementById('csv-file').addEventListener('change', function (e) {
   const file = e.target.files[0];
-  const reader = new FileReader();
 
-  reader.onload = function () {
-    markerClusterGroup.clearLayers();
-    const lines = reader.result.trim().split('\n');
-    const headers = lines[0].split(',');
+  Papa.parse(file, {
+    header: true,
+    skipEmptyLines: true,
+    complete: function (results) {
+      markerClusterGroup.clearLayers();
 
-    for (let i = 1; i < lines.length; i++) {
-      const values = lines[i].split(',');
-      const row = {};
-      headers.forEach((h, idx) => {
-        row[h.trim()] = values[idx]?.trim();
+      results.data.forEach(row => {
+        const {
+          lat, lng, label, type, originWarehouseId,
+          destination, rateValue, quantityMT, vehicleType
+        } = row;
+
+        const latitude = parseFloat(lat);
+        const longitude = parseFloat(lng);
+        if (isNaN(latitude) || isNaN(longitude)) return;
+
+        let color = '#999';
+        let iconType = 'fa-box';
+
+        if (type === 'warehouse') {
+          color = getColorForWarehouse(label);
+          iconType = 'fa-warehouse';
+        } else {
+          color = getColorForWarehouse(originWarehouseId);
+          iconType = 'fa-truck';
+        }
+
+        const popup = `
+          <b>${label}</b><br>
+          Destination: ${destination || 'N/A'}<br>
+          Price: ${rateValue || 'N/A'}<br>
+          Quantity (MT): ${quantityMT || 'N/A'}<br>
+          Vehicle: ${vehicleType || 'N/A'}
+        `;
+
+        const marker = L.marker([latitude, longitude], {
+          icon: createIcon(iconType, color)
+        }).bindPopup(popup);
+
+        markerClusterGroup.addLayer(marker);
       });
-
-      const {
-        lat, lng, label, type, originWarehouseId,
-        destination, rateValue, quantityMT, vehicleType
-      } = row;
-
-      const latitude = parseFloat(lat);
-      const longitude = parseFloat(lng);
-      if (isNaN(latitude) || isNaN(longitude)) continue;
-
-      let color = '#999';
-      let iconType = 'fa-box'; // default
-
-      if (type === 'warehouse') {
-        color = getColorForWarehouse(label);
-        iconType = 'fa-warehouse';
-      } else {
-        color = getColorForWarehouse(originWarehouseId);
-        iconType = 'fa-truck';
-      }
-
-      const popup = `
-        <b>${label}</b><br>
-        Destination: ${destination || 'N/A'}<br>
-        Price: ${rateValue || 'N/A'}<br>
-        Quantity (MT): ${quantityMT || 'N/A'}<br>
-        Vehicle: ${vehicleType || 'N/A'}
-      `;
-
-      const marker = L.marker([latitude, longitude], {
-        icon: createIcon(iconType, color)
-      }).bindPopup(popup);
-
-      markerClusterGroup.addLayer(marker);
     }
-  };
+  });
+});
 
   reader.readAsText(file);
 });
