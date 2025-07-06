@@ -76,3 +76,20 @@ header.top-navbar {
   font-size: 14px;
   box-shadow: 0 1px 4px rgba(0,0,0,0.2);
 }
+
+.custom-cluster-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  color: white;
+}
+
+/* 🧼 Optional: remove default cluster icon styles */
+.marker-cluster-small,
+.marker-cluster-medium,
+.marker-cluster-large {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
