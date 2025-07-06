@@ -7,7 +7,7 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 const markerClusterGroup = L.markerClusterGroup();
 map.addLayer(markerClusterGroup);
 
-// Unique colors per warehouse
+// Color per warehouse
 const warehouseColors = {};
 function getColorForWarehouse(id) {
   if (!warehouseColors[id]) {
@@ -16,7 +16,7 @@ function getColorForWarehouse(id) {
   return warehouseColors[id];
 }
 
-// Custom icon generator
+// Icon generator
 function createIcon(iconType, color) {
   return L.divIcon({
     html: `<div style="color:${color}; font-size:30px;">
@@ -28,6 +28,16 @@ function createIcon(iconType, color) {
   });
 }
 
+// Format timestamp
+function getCurrentTimestamp() {
+  const now = new Date();
+  return now.toLocaleString('en-PH', {
+    month: 'numeric', day: 'numeric', year: '2-digit',
+    hour: 'numeric', minute: '2-digit',
+    hour12: true
+  });
+}
+
 document.getElementById('csv-file').addEventListener('change', function (e) {
   const file = e.target.files[0];
 
@@ -36,6 +46,7 @@ document.getElementById('csv-file').addEventListener('change', function (e) {
     skipEmptyLines: true,
     complete: function (results) {
       markerClusterGroup.clearLayers();
+      const timestamp = getCurrentTimestamp();
 
       results.data.forEach(row => {
         const {
@@ -63,7 +74,9 @@ document.getElementById('csv-file').addEventListener('change', function (e) {
           Destination: ${destination || 'N/A'}<br>
           Price: ${rateValue || 'N/A'}<br>
           Quantity (MT): ${quantityMT || 'N/A'}<br>
-          Vehicle: ${vehicleType || 'N/A'}
+          Vehicle: ${vehicleType || 'N/A'}<br>
+          Created: ${timestamp}<br>
+          Updated: ${timestamp}
         `;
 
         const marker = L.marker([latitude, longitude], {
@@ -74,7 +87,4 @@ document.getElementById('csv-file').addEventListener('change', function (e) {
       });
     }
   });
-});
-
-  reader.readAsText(file);
 });
