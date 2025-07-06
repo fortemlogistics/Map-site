@@ -2,8 +2,12 @@
   height: 600px;
   width: 100%;
 }
-.custom-icon {
-  text-align: center;
-  background-color: transparent;
-  border: none;
+.legend {
+  background: white;
+  padding: 10px 15px;
+  font-size: 14px;
+  color: #333;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  line-height: 1.5;
 }

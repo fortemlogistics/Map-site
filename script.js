@@ -8,24 +8,24 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 const markerClusterGroup = L.markerClusterGroup();
 map.addLayer(markerClusterGroup);
 
-// Store warehouse colors
-const warehouseColors = {};
+// ✅ Fixed colors for specific warehouses
+const warehouseColors = {
+  'L07': 'blue',
+  'L08': 'red',
+  'L10': 'green',
+  'V01': 'orange',
+  'V02': 'pink',
+  'V03': 'purple',
+  'M03': 'yellow',
+  'M01': 'black'
+};
 
-// Assign and return color by warehouse ID (normalized)
-function assignColorForWarehouse(id) {
-  const key = (id || '').trim().toUpperCase();
-  if (!warehouseColors[key]) {
-    warehouseColors[key] = '#' + Math.floor(Math.random() * 16777215).toString(16);
-  }
-  return warehouseColors[key];
-}
-
-// Get already assigned color
+// Get assigned color (warehouse or truck)
 function getColor(id) {
   return warehouseColors[(id || '').trim().toUpperCase()] || '#999';
 }
 
-// Create icon for map
+// Create map icon
 function createIcon(iconType, color) {
   return L.divIcon({
     html: `<div style="color:${color}; font-size:30px;">
@@ -37,7 +37,7 @@ function createIcon(iconType, color) {
   });
 }
 
-// Get current timestamp
+// Format timestamp
 function getCurrentTimestamp() {
   const now = new Date();
   return now.toLocaleString('en-PH', {
@@ -47,7 +47,7 @@ function getCurrentTimestamp() {
   });
 }
 
-// File upload
+// Load CSV
 document.getElementById('csv-file').addEventListener('change', function (e) {
   const file = e.target.files[0];
 
@@ -59,14 +59,7 @@ document.getElementById('csv-file').addEventListener('change', function (e) {
       const timestamp = getCurrentTimestamp();
       const data = results.data;
 
-      // Step 1: Assign colors to each warehouse label
-      data.forEach(row => {
-        if (row.type === 'warehouse' && row.label) {
-          assignColorForWarehouse(row.label);
-        }
-      });
-
-      // Step 2: Place markers for all rows
+      // Place markers
       data.forEach(row => {
         const {
           lat, lng, label, type, originWarehouseId,
@@ -107,3 +100,20 @@ document.getElementById('csv-file').addEventListener('change', function (e) {
     }
   });
 });
+// ✅ Add legend to the map
+const legend = L.control({ position: 'bottomright' });
+
+legend.onAdd = function () {
+  const div = L.DomUtil.create('div', 'legend');
+  div.innerHTML = '<strong>📦 Warehouse Colors</strong><br>';
+  
+  for (const [id, color] of Object.entries(warehouseColors)) {
+    div.innerHTML += `
+      <i style="background:${color}; width:12px; height:12px; display:inline-block; margin-right:6px; border-radius:50%;"></i>
+      ${id}<br>`;
+  }
+
+  return div;
+};
+
+legend.addTo(map);
