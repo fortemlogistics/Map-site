@@ -129,7 +129,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const legend = L.control({ position: 'bottomright' });
   legend.onAdd = function () {
     const div = L.DomUtil.create('div', 'legend');
-    div.innerHTML = '<strong>📦 Warehouse Colors</strong><br>';
+    div.innerHTML = '<strong>Warehouse Colors</strong><br>';
     for (const [id, color] of Object.entries(warehouseColors)) {
       div.innerHTML += `
         <i style="background:${color}; width:12px; height:12px; display:inline-block; margin-right:6px; border-radius:50%;"></i>
