@@ -1,13 +1,17 @@
-document.addEventListener("DOMContentLoaded", () => {
+ddocument.addEventListener("DOMContentLoaded", () => {
   const map = L.map('map').setView([13.41, 122.56], 6);
+
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap'
+    attribution: '© OpenStreetMap contributors'
   }).addTo(map);
 
-  const markerClusterGroup = L.markerClusterGroup({
-  iconCreateFunction: function (cluster) {
-    const markers = cluster.getAllChildMarkers();
-    let color = '#999';
+  const markerClusterGroup = L.markerClusterGroup();
+  map.addLayer(markerClusterGroup);
+
+  const marker = L.marker([13.41, 122.56]);
+  markerClusterGroup.addLayer(marker);
+});
+
 
     if (markers.length > 0) {
       const icon = markers[0].options.icon;
