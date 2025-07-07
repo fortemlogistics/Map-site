@@ -23,26 +23,24 @@
 </head>
 <body>
   <header class="top-navbar">
-  <div>Fortem Cement Logistics Map PH</div>
-  <nav class="header-menu">
-    <button onclick="toggleAnalytics()">Analytics</button>
-    <button onclick="toggleFilters()">Filters</button>
-    <button onclick="toggleImport()">Import/Update</button>
-    <button onclick="exportAllData()">Export All Data</button>
-    <button onclick="showHelp()">Help</button>
-  </nav>
-</header>
+    <div>Fortem Cement Logistics Map PH</div>
+    <nav class="header-menu">
+      <button onclick="toggleAnalytics()">Analytics</button>
+      <button onclick="toggleFilters()">Filters</button>
+      <button onclick="toggleImport()">Import/Update</button>
+      <button onclick="exportAllData()">Export All Data</button>
+      <button onclick="showHelp()">Help</button>
+    </nav>
+  </header>
 
-<!-- CSV upload input -->
-<input type="file" id="csv-file" accept=".csv" />
+  <!-- Upload and map elements -->
+  <input type="file" id="csv-file" accept=".csv" />
+  <div id="map"></div>
+  <div id="analytics-box" style="display: none;"></div>
 
-<!-- Map container -->
-<div id="map"></div>
-
-<!-- Analytics box -->
-<div id="analytics-box" style="display: none; background: white; padding: 10px; margin: 10px; border-radius: 6px; box-shadow: 0 1px 4px rgba(0,0,0,0.2); font-size: 14px;"></div>
-
+  <script src="script.js"></script>
 </body>
+
 
 <script src="script.js"></script>
 </html>
