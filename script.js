@@ -1,17 +1,13 @@
-ddocument.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", () => {
   const map = L.map('map').setView([13.41, 122.56], 6);
-
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap contributors'
+    attribution: '© OpenStreetMap'
   }).addTo(map);
 
-  const markerClusterGroup = L.markerClusterGroup();
-  map.addLayer(markerClusterGroup);
-
-  const marker = L.marker([13.41, 122.56]);
-  markerClusterGroup.addLayer(marker);
-});
-
+  const markerClusterGroup = L.markerClusterGroup({
+  iconCreateFunction: function (cluster) {
+    const markers = cluster.getAllChildMarkers();
+    let color = '#999';
 
     if (markers.length > 0) {
       const icon = markers[0].options.icon;
@@ -152,46 +148,11 @@ window.toggleAnalytics = function () {
   }
 };
 
-// ✅ Update analytics after CSV upload
-function updateAnalytics(data) {
-  const warehouseCount = new Set();
-  let truckCount = 0;
-  let trailer = 0;
-  let cargo = 0;
-
-  data.forEach(row => {
-    const type = (row.type || '').toLowerCase();
-    if (type === 'warehouse') warehouseCount.add(row.originWarehouseId);
-    if (type === 'rating') {
-      truckCount++;
-      const vType = (row.vehicleType || '').toUpperCase();
-      if (vType === 'TRAILER') trailer++;
-      if (vType === 'CARGO') cargo++;
-    }
-  });
-
-  const hasLinks = truckCount > 0;
-  const analyticsBox = document.getElementById('analytics-box');
-
-  if (analyticsBox) {
-    analyticsBox.innerHTML = `
-      <strong>📊 Map Analytics</strong><br>
-      Total Warehouses: ${warehouseCount.size}<br>
-      Total Trucks/Rates: ${truckCount}<br><br>
-
-      <strong>🏭 Warehouse Details</strong><br>
-      ${hasLinks ? 'Warehouses linked to trucks/rates available.' : 'No trucks/rates linked to warehouses yet.'}<br><br>
-
-      <strong>🚚 Vehicle Types</strong><br>
-      CARGO: ${cargo}<br>
-      TRAILER: ${trailer}<br>
-    `;
-    analyticsDataAvailable = true; // ✅ Now we can toggle it
-  }
-}
 
 // ✅ Optional UI stubs
+window.toggleAnalytics = () => alert("Upload csv first.");
 window.toggleFilters = () => alert("Toggle Filters clicked.");
 window.toggleImport = () => alert("Toggle Import/Update clicked.");
 window.exportAllData = () => alert("Export All Data clicked.");
 window.showHelp = () => alert("Help clicked.");
+}); 
