@@ -1,8 +1,10 @@
 document.addEventListener("DOMContentLoaded", () => {
   const map = L.map('map').setView([13.41, 122.56], 6);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  attribution: '© OpenStreetMap'
-}).addTo(map);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap'
+  }).addTo(map);
+
 
   const markerClusterGroup = L.markerClusterGroup({
   iconCreateFunction: function (cluster) {
