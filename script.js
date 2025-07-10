@@ -1,45 +1,44 @@
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener('DOMContentLoaded', () => {
   const map = L.map('map').setView([13.41, 122.56], 6);
 
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap contributors'
+    attribution: '&copy; OpenStreetMap contributors'
   }).addTo(map);
 
   // Just to confirm it's working, add a marker
   L.marker([13.41, 122.56]).addTo(map).bindPopup("Map Loaded").openPopup();
-});
-
 
   const markerClusterGroup = L.markerClusterGroup({
-  iconCreateFunction: function (cluster) {
-    const markers = cluster.getAllChildMarkers();
-    let color = '#999';
+    iconCreateFunction: function (cluster) {
+      const markers = cluster.getAllChildMarkers();
+      let color = '#999';
 
-    if (markers.length > 0) {
-      const icon = markers[0].options.icon;
-      const colorMatch = icon.options.html.match(/color:(.*?);/);
-      if (colorMatch) {
-        color = colorMatch[1].trim();
+      if (markers.length > 0) {
+        const icon = markers[0].options.icon;
+        const colorMatch = icon.options.html.match(/color:(.*?);/);
+        if (colorMatch) {
+          color = colorMatch[1].trim();
+        }
       }
-    }
 
-    return L.divIcon({
-      html: `<div style="
-        background-color: ${color};
-        color: white;
-        border-radius: 50%;
-        width: 40px;
-        height: 40px;
-        line-height: 40px;
-        text-align: center;
-        font-size: 16px;
-        box-shadow: 0 0 4px rgba(0,0,0,0.3);
-      ">${cluster.getChildCount()}</div>`,
-      className: 'custom-cluster-icon',
-      iconSize: [40, 40]
-    });
-  }
-});
+      return L.divIcon({
+        html: `<div style="
+          background-color: ${color};
+          color: white;
+          border-radius: 50%;
+          width: 40px;
+          height: 40px;
+          line-height: 40px;
+          text-align: center;
+          font-size: 16px;
+          box-shadow: 0 0 4px rgba(0,0,0,0.3);
+        ">${cluster.getChildCount()}</div>`,
+        className: 'custom-cluster-icon',
+        iconSize: [40, 40]
+      });
+    }
+  });
+
   map.addLayer(markerClusterGroup);
 
   const warehouseColors = {
@@ -75,6 +74,8 @@ document.addEventListener("DOMContentLoaded", () => {
       hour12: true
     });
   }
+
+  let analyticsDataAvailable = false;
 
   document.getElementById('csv-file').addEventListener('change', function (e) {
     const file = e.target.files[0];
@@ -122,6 +123,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         updateAnalytics(data);
+        analyticsDataAvailable = true;
       }
     });
   });
@@ -139,26 +141,46 @@ document.addEventListener("DOMContentLoaded", () => {
   };
   legend.addTo(map);
 
-
- let analyticsDataAvailable = false; // Track if analytics is ready
-
-// ✅ Correct toggle function
-window.toggleAnalytics = function () {
-  const box = document.getElementById('analytics-box');
-  if (!analyticsDataAvailable) {
-    alert("Please upload a CSV file to view analytics.");
-    return;
-  }
-  if (box) {
+  // ✅ Analytics toggle
+  window.toggleAnalytics = function () {
+    const box = document.getElementById('analytics-box');
+    if (!analyticsDataAvailable) {
+      alert("Please upload a CSV file to view analytics.");
+      return;
+    }
     box.style.display = box.style.display === 'none' ? 'block' : 'none';
+  };
+
+  // ✅ Analytics UI update function
+  function updateAnalytics(data) {
+    const warehouseCount = new Set();
+    let truckCount = 0;
+    let trailer = 0;
+    let cargo = 0;
+
+    data.forEach(row => {
+      const type = (row.type || '').toLowerCase();
+      if (type === 'warehouse') warehouseCount.add(row.originWarehouseId);
+      if (type === 'rating') {
+        truckCount++;
+        if ((row.vehicleType || '').toUpperCase() === 'TRAILER') trailer++;
+        if ((row.vehicleType || '').toUpperCase() === 'CARGO') cargo++;
+      }
+    });
+
+    document.getElementById('analytics-box').innerHTML = `
+      <strong>Map Analytics</strong><br>
+      Total Warehouses: ${warehouseCount.size}<br>
+      Total Trucks/Rates: ${truckCount}<br><br>
+      <strong>Vehicle Types</strong><br>
+      CARGO: ${cargo}<br>
+      TRAILER: ${trailer}<br>
+    `;
   }
-};
 
-
-// ✅ Optional UI stubs
-window.toggleAnalytics = () => alert("Upload csv first.");
-window.toggleFilters = () => alert("Toggle Filters clicked.");
-window.toggleImport = () => alert("Toggle Import/Update clicked.");
-window.exportAllData = () => alert("Export All Data clicked.");
-window.showHelp = () => alert("Help clicked.");
-}); 
+  // Other stub buttons
+  window.toggleFilters = () => alert("Toggle Filters clicked.");
+  window.toggleImport = () => alert("Toggle Import/Update clicked.");
+  window.exportAllData = () => alert("Export All Data clicked.");
+  window.showHelp = () => alert("Help clicked.");
+});

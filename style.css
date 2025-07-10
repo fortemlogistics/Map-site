@@ -22,7 +22,7 @@ header.top-navbar {
   max-width: 300px;
 }
 
-##analytics-box {
+#analytics-box {
   background: white;
   padding: 16px;
   margin: 10px 20px;
@@ -70,11 +70,6 @@ header.top-navbar {
 
 .header-menu button:hover {
   text-decoration: underline;
-}
-
-#map {
-  height: calc(100% - 60px);
-  width: 100%;
 }
 
 #csv-file {
