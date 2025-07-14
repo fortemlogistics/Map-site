@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Fortem Cement Logistics Map PH</title>
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Leaflet -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- Marker Cluster -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css" />
+  <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css">
+
+  <!-- PapaParse -->
+  <script src="https://unpkg.com/papaparse@5.3.2/papaparse.min.js"></script>
+</head>
+<body>
+  <header class="top-navbar">
+    <div>Fortem Cement Logistics Map PH</div>
+    <nav class="header-menu">
+      <button onclick="toggleAnalytics()">Analytics</button>
+      <button onclick="toggleFilters()">Filters</button>
+      <button onclick="toggleImport()">Import/Update</button>
+      <button onclick="exportAllData()">Export All Data</button>
+      <button onclick="showHelp()">Help</button>
+    </nav>
+  </header>
+
+  <!-- Upload and map elements -->
+  <input type="file" id="csv-file" accept=".csv" />
+  <div class="filter-controls">
+  <label><input type="checkbox" id="show-warehouses" checked> Show Warehouses</label>
+  <label><input type="checkbox" id="show-trucks" checked> Show Trucks</label>
+</div>
+  <div id="map"></div>
+  <div id="analytics-box" style="display: none;"></div>
+  <div id="filters" style="position: absolute; top: 70px; left: 180px; z-index: 1000; background: white; padding: 6px 10px; border-radius: 6px; box-shadow: 0 1px 4px rgba(0,0,0,0.2); font-size: 14px;">
+  <label><input type="checkbox" id="show-trucks" checked> Show Trucks</label><br>
+  <label><input type="checkbox" id="show-warehouses" checked> Show Warehouses</label>
+</div>
+
+
+  <!-- ✅ Initialize the map AFTER the #map div exists -->
+  <script>
+    const map = L.map('map').setView([13.41, 122.56], 6);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+  </script>
+
+  <!-- Your main logic -->
+  <script src="script.js"></script>
+</body>
+</html>
