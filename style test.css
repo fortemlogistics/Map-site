@@ -1,0 +1,21 @@
+#map {
+  height: 90vh;
+}
+
+#upload-container {
+  padding: 10px;
+}
+
+.warehouse-icon {
+  background-image: url('https://img.icons8.com/color/48/000000/warehouse.png');
+  background-size: cover;
+  width: 48px;
+  height: 48px;
+}
+
+.truck-icon {
+  background-image: url('https://img.icons8.com/color/48/000000/semi-truck.png');
+  background-size: cover;
+  width: 48px;
+  height: 48px;
+}

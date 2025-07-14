@@ -1,188 +1,70 @@
-document.addEventListener('DOMContentLoaded', () => {
-  const map = L.map('map').setView([13.41, 122.56], 6);
+const map = L.map('map').setView([13.41, 122.56], 6);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '&copy; OpenStreetMap contributors'
+}).addTo(map);
 
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; OpenStreetMap contributors'
-  }).addTo(map);
+const colors = {};
+const getRandomColor = () => '#' + Math.floor(Math.random() * 16777215).toString(16);
+const markers = L.markerClusterGroup();
 
-  const markerClusterGroup = L.markerClusterGroup({
-    iconCreateFunction: function (cluster) {
-      const markers = cluster.getAllChildMarkers();
-      let color = '#999';
-      if (markers.length > 0) {
-        const icon = markers[0].options.icon;
-        const colorMatch = icon.options.html.match(/color:(.*?);/);
-        if (colorMatch) color = colorMatch[1].trim();
-      }
-      return L.divIcon({
-        html: `<div style="
-          background-color: ${color};
-          color: white;
-          border-radius: 50%;
-          width: 40px;
-          height: 40px;
-          line-height: 40px;
-          text-align: center;
-          font-size: 16px;
-          box-shadow: 0 0 4px rgba(0,0,0,0.3);
-        ">${cluster.getChildCount()}</div>`,
-        className: 'custom-cluster-icon',
-        iconSize: [40, 40]
-      });
+function parseCSV(data) {
+  const lines = data.trim().split('\n');
+  const headers = lines[0].split(',');
+  return lines.slice(1).map(line => {
+    const values = line.split(',');
+    return headers.reduce((obj, key, i) => {
+      obj[key] = values[i];
+      return obj;
+    }, {});
+  });
+}
+
+function loadMap(data) {
+  markers.clearLayers();
+  const parsedData = parseCSV(data);
+
+  parsedData.forEach(item => {
+    const lat = parseFloat(item.lat);
+    const lng = parseFloat(item.lng);
+    if (!lat || !lng) return;
+
+    let color = colors[item.label];
+    if (item.type === 'warehouse') {
+      color = getRandomColor();
+      colors[item.label] = color;
+    } else if (item.type === 'truck') {
+      color = colors[item.originWarehouseId];
     }
+
+    const icon = L.divIcon({
+      className: item.type === 'warehouse' ? 'warehouse-icon' : 'truck-icon',
+      iconSize: [48, 48],
+      iconAnchor: [24, 48]
+    });
+
+    const marker = L.marker([lat, lng], { icon });
+    let popup = `${item.label}`;
+    if (item.type === 'truck') {
+      popup = `<b>${item.label} TO ${item.destination}</b><br>
+      Destination: ${item.destination}<br>
+      Price: ${item.rateValue}<br>
+      Quantity (MT): ${item.quantityMT}<br>
+      Vehicle: ${item.vehicleType}<br>
+      Created: 7/6/25, 10:59 PM<br>
+      Updated: 7/6/25, 10:59 PM`;
+    }
+    marker.bindPopup(popup);
+    markers.addLayer(marker);
   });
 
-  map.addLayer(markerClusterGroup);
+  map.addLayer(markers);
+}
 
-  const warehouseColors = {
-    'L07': 'blue', 'L08': 'red', 'L10': 'green', 'V01': 'orange',
-    'V02': 'pink', 'V03': 'purple', 'M03': 'yellow', 'M01': 'black'
+document.getElementById('csvUpload').addEventListener('change', function (e) {
+  const file = e.target.files[0];
+  const reader = new FileReader();
+  reader.onload = function (event) {
+    loadMap(event.target.result);
   };
-
-  function getColor(id) {
-    const key = (id || '').trim().toUpperCase();
-    return warehouseColors[key] || '#999';
-  }
-
-  function createIcon(iconType, color) {
-    return L.divIcon({
-      html: `<div style="color:${color}; font-size:30px;"><i class="fas ${iconType}"></i></div>`,
-      className: 'custom-icon',
-      iconSize: [40, 40],
-      iconAnchor: [20, 20]
-    });
-  }
-
-  function getCurrentTimestamp() {
-    const now = new Date();
-    return now.toLocaleString('en-PH', {
-      month: 'numeric', day: 'numeric', year: '2-digit',
-      hour: 'numeric', minute: '2-digit', hour12: true
-    });
-  }
-
-  let analyticsDataAvailable = false;
-  let allMarkers = [];
-
-  document.getElementById('csv-file').addEventListener('change', function (e) {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    Papa.parse(file, {
-      header: true,
-      skipEmptyLines: true,
-      transformHeader: h => h.trim().replace(/\r/g, ''),
-      complete: function (results) {
-        const data = results.data;
-        const timestamp = getCurrentTimestamp();
-
-        markerClusterGroup.clearLayers();
-        allMarkers = [];
-
-        data.forEach(row => {
-          const {
-            lat, lng, label, type,
-            originWarehouseId, destination,
-            rateValue, quantityMT, vehicleType
-          } = row;
-
-          const latitude = parseFloat(lat);
-          const longitude = parseFloat(lng);
-          if (isNaN(latitude) || isNaN(longitude)) return;
-
-          const cleanType = (type || '').toLowerCase();
-          const color = getColor(originWarehouseId);
-          const iconType = cleanType === 'warehouse' ? 'fa-warehouse' : 'fa-truck';
-
-          let popup = `<b>${label}</b><br>`;
-          if (cleanType !== 'warehouse') {
-            if (destination) popup += `Destination: ${destination}<br>`;
-            if (rateValue) popup += `Price: ${rateValue}<br>`;
-            if (quantityMT) popup += `Quantity (MT): ${quantityMT}<br>`;
-            if (vehicleType) popup += `Vehicle: ${vehicleType}<br>`;
-          }
-          popup += `Created: ${timestamp}<br>Updated: ${timestamp}`;
-
-          const marker = L.marker([latitude, longitude], {
-            icon: createIcon(iconType, color),
-            type: cleanType
-          }).bindPopup(popup);
-
-          allMarkers.push(marker);
-        });
-
-        applyFilters();
-        updateAnalytics(data);
-        analyticsDataAvailable = true;
-      }
-    });
-  });
-
-  function applyFilters() {
-    const showWarehouses = document.getElementById('show-warehouses').checked;
-    const showTrucks = document.getElementById('show-trucks').checked;
-
-    markerClusterGroup.clearLayers();
-    allMarkers.forEach(marker => {
-      const markerType = marker.options.type;
-      if ((markerType === 'warehouse' && showWarehouses) ||
-          (markerType === 'rating' && showTrucks)) {
-        markerClusterGroup.addLayer(marker);
-      }
-    });
-  }
-
-  document.getElementById('show-warehouses').addEventListener('change', applyFilters);
-  document.getElementById('show-trucks').addEventListener('change', applyFilters);
-
-  const legend = L.control({ position: 'bottomright' });
-  legend.onAdd = function () {
-    const div = L.DomUtil.create('div', 'legend');
-    div.innerHTML = '<strong>Warehouse Colors</strong><br>';
-    for (const [id, color] of Object.entries(warehouseColors)) {
-      div.innerHTML += `
-        <i style="background:${color}; width:12px; height:12px; display:inline-block; margin-right:6px; border-radius:50%;"></i>
-        ${id}<br>`;
-    }
-    return div;
-  };
-  legend.addTo(map);
-
-  window.toggleAnalytics = function () {
-    const box = document.getElementById('analytics-box');
-    if (!analyticsDataAvailable) {
-      alert("Please upload a CSV file to view analytics.");
-      return;
-    }
-    box.style.display = box.style.display === 'none' ? 'block' : 'none';
-  };
-
-  function updateAnalytics(data) {
-    const warehouseCount = new Set();
-    let truckCount = 0, trailer = 0, cargo = 0;
-
-    data.forEach(row => {
-      const type = (row.type || '').toLowerCase();
-      if (type === 'warehouse') warehouseCount.add(row.originWarehouseId);
-      if (type === 'rating') {
-        truckCount++;
-        if ((row.vehicleType || '').toUpperCase() === 'TRAILER') trailer++;
-        if ((row.vehicleType || '').toUpperCase() === 'CARGO') cargo++;
-      }
-    });
-
-    document.getElementById('analytics-box').innerHTML = `
-      <strong>Map Analytics</strong><br>
-      Total Warehouses: ${warehouseCount.size}<br>
-      Total Trucks/Rates: ${truckCount}<br><br>
-      <strong>Vehicle Types</strong><br>
-      CARGO: ${cargo}<br>
-      TRAILER: ${trailer}<br>
-    `;
-  }
-
-  window.toggleFilters = () => alert("Toggle Filters clicked.");
-  window.toggleImport = () => alert("Toggle Import/Update clicked.");
-  window.exportAllData = () => alert("Export All Data clicked.");
-  window.showHelp = () => alert("Help clicked.");
+  reader.readAsText(file);
 });
