@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Fortem Cement Logistics Map PH</title>
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Leaflet -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- Marker Cluster -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css" />
+  <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css">
+
+  <!-- PapaParse -->
+  <script src="https://unpkg.com/papaparse@5.3.2/papaparse.min.js"></script>
+</head>
+<body>
+  <header class="top-navbar">
+    <div>Fortem Cement Logistics Map PH</div>
+    <nav class="header-menu">
+      <button onclick="toggleAnalytics()">Analytics</button>
+      <button onclick="toggleFilters()">Filters</button>
+      <button onclick="toggleImport()">Import/Update</button>
+      <button onclick="exportAllData()">Export All Data</button>
+      <button onclick="showHelp()">Help</button>
+    </nav>
+  </header>
+
+  <input type="file" id="csv-file" accept=".csv" />
+  <div id="map"></div>
+  <div id="analytics-box" style="display: none;"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
+
