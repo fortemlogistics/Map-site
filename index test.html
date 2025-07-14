@@ -33,20 +33,11 @@
     </nav>
   </header>
 
-  <!-- Upload and map elements -->
   <input type="file" id="csv-file" accept=".csv" />
   <div id="map"></div>
   <div id="analytics-box" style="display: none;"></div>
 
-  <!-- ✅ Initialize the map AFTER the #map div exists -->
-  <script>
-    const map = L.map('map').setView([13.41, 122.56], 6);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap contributors'
-    }).addTo(map);
-  </script>
-
-  <!-- Your main logic -->
   <script src="script.js"></script>
 </body>
 </html>
+
