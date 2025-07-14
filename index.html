@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Fortem Cement Logistics Map PH</title>
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Leaflet -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- Marker Cluster -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css" />
+  <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css">
+
+  <!-- PapaParse -->
+  <script src="https://unpkg.com/papaparse@5.3.2/papaparse.min.js"></script>
+</head>
+<body>
+ <header class="top-navbar">
+    <div>Fortem Cement Logistics Map PH</div>
+    <nav class="header-menu">
+        <div class="import-toggle">
+            <button onclick="toggleImport()">Import</button>
+            <div id="import-container" class="hidden">
+                <input type="file" id="csv-file" accept=".csv" />
+            </div>
+        </div>
+        <button onclick="toggleAnalytics()">Analytics</button>
+    </nav>
+</header>
+
+<div id="analytics-banner" class="hidden">
+    <div id="analytics-content">
+        <h2>Fortem Analytics</h2>
+    </div>
+</div>
+
+<div id="map"></div>
+    <script src="script.js"></script>
+</body>
+</html>
