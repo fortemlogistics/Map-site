@@ -128,7 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  const legend = L.control({ position: 'bottomright' });
+const legend = L.control({ position: 'bottomright' });
 legend.onAdd = function () {
     const div = L.DomUtil.create('div', 'legend-container');
     div.innerHTML = `
@@ -143,8 +143,8 @@ legend.onAdd = function () {
         <div class="legend-column">
             <strong>Capacity</strong>
             <div>🚛 TRAILER 40 (20 Sling or 40 Jumbo)</div>
-            <div>📦 18-20 CRATES (PLYWOOD)</div>
-            <div>📦 13-15 CRATES (CEMENT BOARD)</div>
+            <div>📦 18-20 CRATES (Plywood)</div>
+            <div>📦 13-15 CRATES (Cement Board)</div>
         </div>
     `;
     return div;
