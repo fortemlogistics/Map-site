@@ -133,17 +133,18 @@ legend.onAdd = function () {
     const div = L.DomUtil.create('div', 'legend-container');
     div.innerHTML = `
         <div class="legend-column">
-            <strong>Warehouse Colors</strong><br>
+            <strong>Warehouse Colors</strong>
             ${Object.entries(warehouseColors).map(([id, color]) => `
-                <i style="background:${color}; width:12px; height:12px; display:inline-block; margin-right:6px; border-radius:50%;"></i>
-                ${id}<br>
+                <div class="legend-row">
+                    <i style="background:${color};"></i> ${id}
+                </div>
             `).join('')}
         </div>
         <div class="legend-column">
-            <strong>Vehicle Legend</strong><br>
-            🚛 TRAILER 40 (20 SLING or 40 JUMBO)<br>
-            📦 18-20 CRATES (PLYWOOD)<br>
-            📦 13-15 CRATES (CEMENT BOARD)<br>
+            <strong>Vehicle Legend</strong>
+            <div>🚛 TRAILER 40 (20 Sling or 40 Jumbo)</div>
+            <div>📦 18-20 CRATES (PLYWOOD)</div>
+            <div>📦 13-15 CRATES (CEMENT BOARD)</div>
         </div>
     `;
     return div;
