@@ -94,7 +94,7 @@ header.top-navbar {
 .legend-container {
     display: flex;
     flex-direction: column;
-    gap: 40px;
+    gap: 20px;
     background: transparent; /* 🔥 Transparent background */
     padding: 10px;
     border-radius: 4px;
