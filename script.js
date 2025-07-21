@@ -77,7 +77,6 @@ document.addEventListener('DOMContentLoaded', () => {
       transformHeader: h => h.trim().replace(/\r/g, ''),
       complete: function (results) {
         const data = results.data;
-        const timestamp = getCurrentTimestamp();
 
         markerClusterGroup.clearLayers();
 
