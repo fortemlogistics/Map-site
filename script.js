@@ -129,17 +129,26 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   const legend = L.control({ position: 'bottomright' });
-  legend.onAdd = function () {
-    const div = L.DomUtil.create('div', 'legend');
-    div.innerHTML = '<strong>Warehouse Colors</strong><br>';
-    for (const [id, color] of Object.entries(warehouseColors)) {
-      div.innerHTML += `
-        <i style="background:${color}; width:12px; height:12px; display:inline-block; margin-right:6px; border-radius:50%;"></i>
-        ${id}<br>`;
-    }
+legend.onAdd = function () {
+    const div = L.DomUtil.create('div', 'legend-container');
+    div.innerHTML = `
+        <div class="legend-column">
+            <strong>Warehouse Colors</strong><br>
+            ${Object.entries(warehouseColors).map(([id, color]) => `
+                <i style="background:${color}; width:12px; height:12px; display:inline-block; margin-right:6px; border-radius:50%;"></i>
+                ${id}<br>
+            `).join('')}
+        </div>
+        <div class="legend-column">
+            <strong>Vehicle Legend</strong><br>
+            🚛 TRAILER 40 (20 SLING or 40 JUMBO)<br>
+            📦 18-20 CRATES (PLYWOOD)<br>
+            📦 13-15 CRATES (CEMENT BOARD)<br>
+        </div>
+    `;
     return div;
-  };
-  legend.addTo(map);
+};
+legend.addTo(map);
 
   // ✅ Analytics toggle
 window.toggleAnalytics = function () {
