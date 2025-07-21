@@ -144,7 +144,7 @@ legend.onAdd = function () {
             <strong>Capacity</strong>
             <div>🚛 TRAILER 40 (20 Sling or 40 Jumbo)</div>
             <div>📦 18-20 CRATES (Plywood)</div>
-            <div>📦 13-15 CRATES (Cement Board)</div>
+            <div>📦 10-13 CRATES (Cement Board)</div>
         </div>
     `;
     return div;

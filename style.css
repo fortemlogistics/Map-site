@@ -93,12 +93,11 @@ header.top-navbar {
 }
 .legend-container {
     display: flex;
-    flex-direction: column;
     gap: 20px;
     background: transparent; /* 🔥 Transparent background */
     padding: 10px;
     border-radius: 4px;
-    font-size: 10px;
+    font-size: 12px;
     line-height: 1.5;
     color: black;
 }
