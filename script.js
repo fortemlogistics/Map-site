@@ -64,14 +64,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  function getCurrentTimestamp() {
-    const now = new Date();
-    return now.toLocaleString('en-PH', {
-      month: 'numeric', day: 'numeric', year: '2-digit',
-      hour: 'numeric', minute: '2-digit',
-      hour12: true
-    });
-  }
 
   let analyticsDataAvailable = false;
 
@@ -111,8 +103,6 @@ document.addEventListener('DOMContentLoaded', () => {
               Price: ${rateValue || 'N/A'}<br>
               Quantity (MT): ${quantityMT || 'N/A'}<br>
               Vehicle: ${vehicleType || 'N/A'}<br>
-              Created: ${timestamp}<br>
-              Updated: ${timestamp}
             `;
 
           const marker = L.marker([latitude, longitude], {
