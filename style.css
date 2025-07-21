@@ -93,8 +93,9 @@ header.top-navbar {
 }
 .legend-container {
     display: flex;
-    gap: 20px;
-    background: transparent; /* 🔥 Transparent background */
+    justify-content: space-between;
+    width: 350px; /* Adjust width as needed */
+    background: transparent;
     padding: 10px;
     border-radius: 4px;
     font-size: 12px;
