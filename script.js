@@ -141,7 +141,7 @@ legend.onAdd = function () {
             `).join('')}
         </div>
         <div class="legend-column">
-            <strong>Vehicle Legend</strong>
+            <strong>Capacity</strong>
             <div>🚛 TRAILER 40 (20 Sling or 40 Jumbo)</div>
             <div>📦 18-20 CRATES (PLYWOOD)</div>
             <div>📦 13-15 CRATES (CEMENT BOARD)</div>
