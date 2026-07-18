@@ -125,11 +125,23 @@ header.top-navbar {
     background-color: rgba(0, 0, 0, 0.05);
     border-radius: 3px;
 }
+/* Styling for the marker badges */
+.cargo-badge {
+    position: absolute;
+    background-color: #ffffff;
+    color: #000000;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    border: 1px solid #000000;
+    border-radius: 3px;
+    text-shadow: none;
+}
+
+/* Custom layout position for the longer vehicle labels */
 .cargo-text-badge {
     font-size: 8px !important;
     padding: 1px 3px !important;
     top: -6px !important;
     right: -12px !important; 
     z-index: 9999; 
-}
 }
