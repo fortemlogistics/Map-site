@@ -119,7 +119,7 @@ header.top-navbar {
     width: 12px;
     height: 12px;
     border-radius: 50%;
+    border: 1px solid #ccc; /* Adds visibility for white markers like L02 */
 }
-
 
 
