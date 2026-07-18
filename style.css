@@ -125,23 +125,28 @@ header.top-navbar {
     background-color: rgba(0, 0, 0, 0.05);
     border-radius: 3px;
 }
-/* Styling for the marker badges */
-.cargo-badge {
-    position: absolute;
-    background-color: #ffffff;
-    color: #000000;
-    font-family: Arial, sans-serif;
-    font-weight: bold;
-    border: 1px solid #000000;
-    border-radius: 3px;
-    text-shadow: none;
+/* Forces the icon container to have a strict layout box */
+.custom-icon {
+    width: 40px !important;
+    height: 40px !important;
+    overflow: visible !important;
 }
 
-/* Custom layout position for the longer vehicle labels */
-.cargo-text-badge {
-    font-size: 8px !important;
-    padding: 1px 3px !important;
-    top: -6px !important;
-    right: -12px !important; 
-    z-index: 9999; 
+/* Base style for the text badges */
+.cargo-badge {
+    position: absolute !important;
+    top: -8px !important;
+    right: -15px !important; /* Shifts the text right so it sits clearly over the truck */
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    font-family: Arial, sans-serif !important;
+    font-size: 9px !important;
+    font-weight: bold !important;
+    padding: 1px 4px !important;
+    border: 1px solid #000000 !important;
+    border-radius: 3px !important;
+    white-space: nowrap !important; /* Prevents text from breaking into two lines */
+    z-index: 99999 !important;
+    text-shadow: none !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3) !important;
 }
