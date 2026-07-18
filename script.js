@@ -184,15 +184,21 @@ document.addEventListener('DOMContentLoaded', () => {
     let truckCount = 0;
     let trailer = 0;
     let cargo = 0;
+    let elf = 0;
+    let bulk = 0;
+    let forward = 0;
 
     data.forEach(row => {
         const type = (row.type || '').toLowerCase();
         if (type === 'warehouse') warehouseCount.add(row.originWarehouseId);
         if (type === 'rating') {
             truckCount++;
-            const vehicle = (row.vehicleType || '').toUpperCase();
-            if (vehicle === 'TRAILER') trailer++;
-            if (vehicle === 'CARGO') cargo++;
+            const vehicle = (row.vehicleType || '').toUpperCase().trim();
+            if (vehicle.includes('TRAILER')) trailer++;
+            else if (vehicle.includes('ELF')) elf++;
+            else if (vehicle.includes('BULK')) bulk++;
+            else if (vehicle.includes('FORWARD')) forward++;
+            else if (vehicle.includes('CARGO') || vehicle === '') cargo++; // Cargo or blank defaults
         }
     });
 
@@ -204,6 +210,9 @@ document.addEventListener('DOMContentLoaded', () => {
         <strong>Vehicle Types</strong><br>
         Cargo: ${cargo}<br>
         Trailer: ${trailer}<br>
+        Elf: ${elf}<br>
+        Bulk Truck: ${bulk}<br>
+        Forward: ${forward}<br>
     `;
   }
 
