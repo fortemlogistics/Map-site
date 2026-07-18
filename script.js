@@ -126,7 +126,7 @@ legend.onAdd = function () {
         <div class="legend-column">
             <strong>Warehouse Colors</strong>
             ${Object.entries(warehouseColors).map(([id, color]) => `
-                <div class="legend-row">
+                <div class="legend-row" onclick="navigateToWarehouse('${id}')" style="cursor: pointer;">
                     <i style="background:${color};"></i> ${id}
                 </div>
             `).join('')}
@@ -185,4 +185,25 @@ function updateAnalytics(data) {
     `;
 }
 
-});
+window.navigateToWarehouse = function(warehouseId) {
+    let foundMarker = null;
+
+    markerClusterGroup.eachLayer(marker => {
+        if (marker.getPopup() && marker.getPopup().getContent().includes(warehouseId)) {
+            foundMarker = marker;
+        }
+    });
+
+    if (foundMarker) {
+        const latLng = foundMarker.getLatLng();
+        map.flyTo(latLng, 15, {
+            animate: true,
+            duration: 1.5 
+        });
+        foundMarker.openPopup();
+    } else {
+        alert(`Warehouse ${warehouseId} location not found on the map. Make sure your CSV data is imported.`);
+    }
+};
+
+}); 
