@@ -104,13 +104,13 @@ document.addEventListener('DOMContentLoaded', () => {
             iconType = 'fa-warehouse';
           } else {
             const vehicle = (vehicleType || '').toUpperCase().trim();
-
-if (vehicle.includes('TRAILER')) {
-  cargoBadge = '<span class="cargo-badge">TR</span>';
-} else if (vehicle.includes('CARGO') || vehicle === '') { 
-  // Adds badge if it says cargo or handles it as the default fallback vehicle style
-  cargoBadge = '<span class="cargo-badge cargo-text-badge">Cargo</span>';
-}
+            
+            // Only add text badges for Trailer and Cargo vehicles
+            if (vehicle.includes('TRAILER')) {
+              cargoBadge = '<span class="cargo-badge cargo-text-badge">Trailer</span>';
+            } else if (vehicle.includes('CARGO') || vehicle === '') { 
+              cargoBadge = '<span class="cargo-badge cargo-text-badge">Cargo</span>';
+            }
           }
 
           const popup = type.trim().toLowerCase() === 'warehouse'
