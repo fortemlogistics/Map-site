@@ -110,7 +110,9 @@ document.addEventListener('DOMContentLoaded', () => {
               cargoBadge = '<span class="cargo-badge cargo-text-badge">Trailer</span>';
             } else if (vehicle.includes('CARGO') || vehicle === '') { 
               cargoBadge = '<span class="cargo-badge cargo-text-badge">Cargo</span>';
-            } else if (vehicle.includes('ELF')) {
+            } else if (vehicle.includes('BULK TRUCK') || vehicle === '') { 
+              cargoBadge = '<span class="cargo-badge cargo-text-badge">Bulk Truck</span>';
+            }else if (vehicle.includes('ELF')) {
               cargoBadge = '<span class="cargo-badge cargo-text-badge">Elf</span>';
             }
           }
