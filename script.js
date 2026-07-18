@@ -174,6 +174,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Triggered when dropdown selection updates
   window.applyMapFilter = function(selectedValue) {
+    if (!selectedValue || selectedValue === 'IGNORE') return;
     if (globalCSVData.length === 0) return;
     renderMapLayers(globalCSVData, selectedValue);
   };
