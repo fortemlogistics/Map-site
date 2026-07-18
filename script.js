@@ -58,7 +58,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function createIcon(iconType, color) {
     return L.divIcon({
-      html: `<div style="color:${color}; font-size:30px;"><i class="fas ${iconType}"></i></div>`,
+      // Added a text-shadow so white/light icons are clearly visible against any map background
+      html: `<div style="color:${color}; font-size:30px; text-shadow: 0 0 3px rgba(0,0,0,0.8);"><i class="fas ${iconType}"></i></div>`,
       className: 'custom-icon',
       iconSize: [40, 40],
       iconAnchor: [20, 20]
