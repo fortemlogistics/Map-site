@@ -121,5 +121,8 @@ header.top-navbar {
     border-radius: 50%;
     border: 1px solid #ccc; /* Adds visibility for white markers like L02 */
 }
-
+.legend-row:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 3px;
+}
 
