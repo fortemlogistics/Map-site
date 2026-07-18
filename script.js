@@ -152,9 +152,9 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
         <div class="legend-column">
             <strong>Capacity</strong>
-            <div><span class="cargo-badge" style="position:static; display:inline-block; margin-right:5px;">TR</span> 🚛 TRAILER 40</div>
-            <div><span class="cargo-badge" style="position:static; display:inline-block; margin-right:5px;">PW</span> 📦 Plywood Crates</div>
-            <div><span class="cargo-badge" style="position:static; display:inline-block; margin-right:5px;">CB</span> ⬜ Cement Board</div>
+            <div><span class="cargo-badge" style="position:static; display:inline-block; margin-right:5px;">TR</span> 🚛 TRAILER 40 (20 Sling or 40 Jumbo</div>
+            <div><span class="cargo-badge" style="position:static; display:inline-block; margin-right:5px;">PW</span> 📦 18-20 CRATES (Plywood)</div>
+            <div><span class="cargo-badge" style="position:static; display:inline-block; margin-right:5px;">CB</span> ⬜ 10-13 CRATES (Cement Board)</div>
         </div>
     `;
     return div;
