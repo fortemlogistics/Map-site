@@ -27,25 +27,25 @@
     <nav class="header-menu">
         <!-- Integrated Unified Filter Selector -->
         <select id="map-filter" onchange="applyMapFilter(this.value)" style="padding: 5px 10px; border-radius: 4px; border: none; font-size: 14px; cursor: pointer;">
-            <option value="ALL">All Data</option>
-            <option disabled>──────────</option>
-            <option value="V_TRAILER">Vehicle: Trailer</option>
-            <option value="V_CARGO">Vehicle: Cargo</option>
-            <option value="V_ELF">Vehicle: Elf</option>
-            <option value="V_BULK">Vehicle: Bulk Truck</option>
-            <option value="V_FORWARD">Vehicle: Forward</option>
-            <option disabled>──────────</option>
-            <option value="W_L02">Warehouse: L02 (Bataan)</option>
-            <option value="W_L07">Warehouse: L07 (Pampanga)</option>
-            <option value="W_L08">Warehouse: L08 (Tuguegarao)</option>
-            <option value="W_L10">Warehouse: L10 (Currimao)</option>
-            <option value="W_V01">Warehouse: V01 (Iloilo)</option>
-            <option value="W_V02">Warehouse: V02 (Cebu)</option>
-            <option value="W_V03">Warehouse: V03</option>
-            <option value="W_M01">Warehouse: M01 (Davao)</option>
-            <option value="W_M03">Warehouse: M03 (Gensan)</option>
-            <option value="W_M04">Warehouse: M04 (Zamboanga)</option>
-        </select>
+    <option value="ALL">All Data</option>
+    <option value="IGNORE" disabled>──────────</option>
+    <option value="V_TRAILER">Vehicle: Trailer</option>
+    <option value="V_CARGO">Vehicle: Cargo</option>
+    <option value="V_ELF">Vehicle: Elf</option>
+    <option value="V_BULK">Vehicle: Bulk Truck</option>
+    <option value="V_FORWARD">Vehicle: Forward</option>
+    <option value="IGNORE" disabled>──────────</option>
+    <option value="W_L02">Warehouse: L02 (Bataan)</option>
+    <option value="W_L07">Warehouse: L07 (Pampanga)</option>
+    <option value="W_L08">Warehouse: L08 (Tuguegarao)</option>
+    <option value="W_L10">Warehouse: L10 (Currimao)</option>
+    <option value="W_V01">Warehouse: V01 (Iloilo)</option>
+    <option value="W_V02">Warehouse: V02 (Cebu)</option>
+    <option value="W_V03">Warehouse: V03</option>
+    <option value="W_M01">Warehouse: M01 (Davao)</option>
+    <option value="W_M03">Warehouse: M03 (Gensan)</option>
+    <option value="W_M04">Warehouse: M04 (Zamboanga)</option>
+</select>
 
         <div class="import-toggle">
             <button onclick="toggleImport()">Import</button>
