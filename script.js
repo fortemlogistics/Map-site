@@ -105,7 +105,6 @@ document.addEventListener('DOMContentLoaded', () => {
           } else {
             const vehicle = (vehicleType || '').toUpperCase().trim();
             
-            // Only add text badges for Trailer and Cargo vehicles
             if (vehicle.includes('TRAILER')) {
               cargoBadge = '<span class="cargo-badge cargo-text-badge">Trailer</span>';
             } else if (vehicle.includes('CARGO') || vehicle === '') { 
@@ -150,7 +149,7 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
         <div class="legend-column">
             <strong>Capacity</strong>
-            <div>🚛 TRAILER 40 (20 Sling or 40 Jumbo)</div>
+            <div>Sur 🚛 TRAILER 40 (20 Sling or 40 Jumbo)</div>
             <div>📦 18-20 CRATES (Plywood)</div>
             <div>⬜ 10-13 CRATES (Cement Board)</div>
         </div>
