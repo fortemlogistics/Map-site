@@ -103,12 +103,15 @@ document.addEventListener('DOMContentLoaded', () => {
           if ((type || '').trim().toLowerCase() === 'warehouse') {
             iconType = 'fa-warehouse';
           } else {
-            const vehicle = (vehicleType || '').toUpperCase().trim();
+           const vehicle = (vehicleType || '').toUpperCase().trim();
             
+            // Only add text badges for Trailer, Cargo, and Elf vehicles
             if (vehicle.includes('TRAILER')) {
               cargoBadge = '<span class="cargo-badge cargo-text-badge">Trailer</span>';
             } else if (vehicle.includes('CARGO') || vehicle === '') { 
               cargoBadge = '<span class="cargo-badge cargo-text-badge">Cargo</span>';
+            } else if (vehicle.includes('ELF')) {
+              cargoBadge = '<span class="cargo-badge cargo-text-badge">Elf</span>';
             }
           }
 
