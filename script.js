@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  let analyticsDataAvailable = false;
+  let globalCSVData = []; 
 
   document.getElementById('csv-file').addEventListener('change', function (e) {
     const file = e.target.files[0];
@@ -81,66 +81,102 @@ document.addEventListener('DOMContentLoaded', () => {
       skipEmptyLines: true,
       transformHeader: h => h.trim().replace(/\r/g, ''),
       complete: function (results) {
-        const data = results.data;
-
-        markerClusterGroup.clearLayers();
-
-        data.forEach(row => {
-          const {
-            lat, lng, label, type,
-            originWarehouseId, destination,
-            rateValue, quantityMT, vehicleType
-          } = row;
-
-          const latitude = parseFloat(lat);
-          const longitude = parseFloat(lng);
-          if (isNaN(latitude) || isNaN(longitude)) return;
-
-          let color = getColor(originWarehouseId);
-          let iconType = 'fa-truck';
-          let cargoBadge = ''; 
-
-          if ((type || '').trim().toLowerCase() === 'warehouse') {
-            iconType = 'fa-warehouse';
-          } else {
-            const vehicle = (vehicleType || '').toUpperCase().trim();
-            
-            // Evaluates and sets explicit marker tags safely without accidental fallback traps
-            if (vehicle.includes('TRAILER')) {
-              cargoBadge = '<span class="cargo-badge cargo-text-badge">Trailer</span>';
-            } else if (vehicle.includes('BULK')) { 
-              cargoBadge = '<span class="cargo-badge cargo-text-badge">Bulk Truck</span>';
-            } else if (vehicle.includes('FORWARD')) { 
-              cargoBadge = '<span class="cargo-badge cargo-text-badge">Forward</span>';
-            } else if (vehicle.includes('ELF')) {
-              cargoBadge = '<span class="cargo-badge cargo-text-badge">Elf</span>';
-            } else if (vehicle.includes('CARGO') || vehicle === '') { 
-              cargoBadge = '<span class="cargo-badge cargo-text-badge">Cargo</span>';
-            }
-          }
-
-          const popup = type.trim().toLowerCase() === 'warehouse'
-            ? `<b>${label}</b>`
-            : `
-              <b>${label}</b><br>
-              Destination: ${destination || 'N/A'}<br>
-              Price: ${rateValue || 'N/A'}<br>
-              Quantity (MT): ${quantityMT || 'N/A'}<br>
-              Vehicle: ${vehicleType || 'N/A'}<br>
-            `;
-
-          const marker = L.marker([latitude, longitude], {
-            icon: createIcon(iconType, color, cargoBadge)
-          }).bindPopup(popup);
-
-          markerClusterGroup.addLayer(marker);
-        });
-
-        updateAnalytics(data);
-        analyticsDataAvailable = true;
+        globalCSVData = results.data;
+        
+        // Reset filter selection to All when importing a new file
+        if (document.getElementById('map-filter')) {
+          document.getElementById('map-filter').value = 'ALL';
+        }
+        
+        renderMapLayers(globalCSVData);
+        updateAnalytics(globalCSVData);
       }
     });
   });
+
+  // Main rendering processor handling vehicle type or warehouse filtering
+  function renderMapLayers(data, filterValue = 'ALL') {
+    markerClusterGroup.clearLayers();
+
+    data.forEach(row => {
+      const {
+        lat, lng, label, type,
+        originWarehouseId, destination,
+        rateValue, quantityMT, vehicleType
+      } = row;
+
+      const latitude = parseFloat(lat);
+      const longitude = parseFloat(lng);
+      if (isNaN(latitude) || isNaN(longitude)) return;
+
+      const isWarehouse = (type || '').trim().toLowerCase() === 'warehouse';
+      const rowWarehouseId = (originWarehouseId || '').trim().toUpperCase();
+      const vehicle = (vehicleType || '').toUpperCase().trim();
+
+      // 1. WAREHOUSE FILTER LOGIC
+      if (filterValue.startsWith('W_')) {
+        const targetWarehouse = filterValue.replace('W_', '');
+        
+        // If it's a warehouse row, only show the selected one
+        if (isWarehouse && rowWarehouseId !== targetWarehouse) return;
+        
+        // If it's a truck row, only show trucks originating from that warehouse
+        if (!isWarehouse && rowWarehouseId !== targetWarehouse) return;
+      }
+
+      // 2. VEHICLE TYPE FILTER LOGIC
+      if (!isWarehouse && filterValue.startsWith('V_')) {
+        const vehicleFilter = filterValue.replace('V_', '');
+        if (vehicleFilter === 'CARGO' && !vehicle.includes('CARGO') && vehicle !== '') return;
+        if (vehicleFilter === 'TRAILER' && !vehicle.includes('TRAILER')) return;
+        if (vehicleFilter === 'ELF' && !vehicle.includes('ELF')) return;
+        if (vehicleFilter === 'BULK' && !vehicle.includes('BULK')) return;
+        if (vehicleFilter === 'FORWARD' && !vehicle.includes('FORWARD')) return;
+      }
+
+      let color = getColor(originWarehouseId);
+      let iconType = 'fa-truck';
+      let cargoBadge = ''; 
+
+      if (isWarehouse) {
+        iconType = 'fa-warehouse';
+      } else {
+        if (vehicle.includes('TRAILER')) {
+          cargoBadge = '<span class="cargo-badge cargo-text-badge">Trailer</span>';
+        } else if (vehicle.includes('BULK')) { 
+          cargoBadge = '<span class="cargo-badge cargo-text-badge">Bulk Truck</span>';
+        } else if (vehicle.includes('FORWARD')) { 
+          cargoBadge = '<span class="cargo-badge cargo-text-badge">Forward</span>';
+        } else if (vehicle.includes('ELF')) {
+          cargoBadge = '<span class="cargo-badge cargo-text-badge">Elf</span>';
+        } else if (vehicle.includes('CARGO') || vehicle === '') { 
+          cargoBadge = '<span class="cargo-badge cargo-text-badge">Cargo</span>';
+        }
+      }
+
+      const popup = isWarehouse
+        ? `<b>${label}</b>`
+        : `
+          <b>${label}</b><br>
+          Destination: ${destination || 'N/A'}<br>
+          Price: ${rateValue || 'N/A'}<br>
+          Quantity (MT): ${quantityMT || 'N/A'}<br>
+          Vehicle: ${vehicleType || 'N/A'}<br>
+        `;
+
+      const marker = L.marker([latitude, longitude], {
+        icon: createIcon(iconType, color, cargoBadge)
+      }).bindPopup(popup);
+
+      markerClusterGroup.addLayer(marker);
+    });
+  }
+
+  // Triggered when dropdown selection updates
+  window.applyMapFilter = function(selectedValue) {
+    if (globalCSVData.length === 0) return;
+    renderMapLayers(globalCSVData, selectedValue);
+  };
 
   const legend = L.control({ position: 'bottomright' });
   legend.onAdd = function () {
@@ -156,7 +192,7 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
         <div class="legend-column">
             <strong>Capacity</strong>
-            <div>🚛 TRAILER 40 (20 Sling or 40 Jumbo)</div>
+            <div>Templates 🚛 TRAILER 40 (20 Sling or 40 Jumbo)</div>
             <div>📦 18-20 CRATES (Plywood)</div>
             <div>⬜ 10-13 CRATES (Cement Board)</div>
         </div>
@@ -190,10 +226,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     data.forEach(row => {
         const rowType = (row.type || '').trim().toLowerCase();
+        const warehouseId = (row.originWarehouseId || '').trim().toUpperCase();
         
-        if (rowType === 'warehouse') {
+        // Filters out the head office L00 from counts
+        if (rowType === 'warehouse' && warehouseId !== 'L00') {
             warehouseCount.add(row.originWarehouseId);
-        } else {
+        } else if (rowType !== 'warehouse') {
             truckCount++;
             const vehicle = (row.vehicleType || '').toUpperCase().trim();
             
