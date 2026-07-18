@@ -56,16 +56,19 @@ document.addEventListener('DOMContentLoaded', () => {
     return warehouseColors[key] || '#999';
   }
 
-  function createIcon(iconType, color) {
+  function createIcon(iconType, color, cargoBadge = '') {
     return L.divIcon({
-      // Added a text-shadow so white/light icons are clearly visible against any map background
-      html: `<div style="color:${color}; font-size:30px; text-shadow: 0 0 3px rgba(0,0,0,0.8);"><i class="fas ${iconType}"></i></div>`,
+      html: `
+        <div style="color:${color}; font-size:30px; text-shadow: 0 0 3px rgba(0,0,0,0.8); position: relative;">
+          <i class="fas ${iconType}"></i>
+          ${cargoBadge}
+        </div>
+      `,
       className: 'custom-icon',
       iconSize: [40, 40],
       iconAnchor: [20, 20]
     });
   }
-
 
   let analyticsDataAvailable = false;
 
@@ -94,7 +97,23 @@ document.addEventListener('DOMContentLoaded', () => {
           if (isNaN(latitude) || isNaN(longitude)) return;
 
           let color = getColor(originWarehouseId);
-          let iconType = (type || '').trim().toLowerCase() === 'warehouse' ? 'fa-warehouse' : 'fa-truck';
+          let iconType = 'fa-truck';
+          let cargoBadge = ''; 
+
+          if ((type || '').trim().toLowerCase() === 'warehouse') {
+            iconType = 'fa-warehouse';
+          } else {
+            const vehicle = (vehicleType || '').toUpperCase().trim();
+            const dest = (destination || '').toUpperCase().trim();
+            
+            if (vehicle.includes('TRAILER')) {
+              cargoBadge = '<span class="cargo-badge">TR</span>';
+            } else if (vehicle.includes('PLYWOOD') || dest.includes('PLYWOOD')) {
+              cargoBadge = '<span class="cargo-badge">PW</span>';
+            } else if (vehicle.includes('CEMENT') || dest.includes('CEMENT')) {
+              cargoBadge = '<span class="cargo-badge">CB</span>';
+            }
+          }
 
           const popup = type.trim().toLowerCase() === 'warehouse'
             ? `<b>${label}</b>`
@@ -107,7 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
 
           const marker = L.marker([latitude, longitude], {
-            icon: createIcon(iconType, color)
+            icon: createIcon(iconType, color, cargoBadge)
           }).bindPopup(popup);
 
           markerClusterGroup.addLayer(marker);
@@ -119,8 +138,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-const legend = L.control({ position: 'bottomright' });
-legend.onAdd = function () {
+  const legend = L.control({ position: 'bottomright' });
+  legend.onAdd = function () {
     const div = L.DomUtil.create('div', 'legend-container');
     div.innerHTML = `
         <div class="legend-column">
@@ -133,29 +152,28 @@ legend.onAdd = function () {
         </div>
         <div class="legend-column">
             <strong>Capacity</strong>
-            <div>🚛 TRAILER 40 (20 Sling or 40 Jumbo)</div>
-            <div>📦 18-20 CRATES (Plywood)</div>
-            <div>⬜ 10-13 CRATES (Cement Board)</div>
+            <div><span class="cargo-badge" style="position:static; display:inline-block; margin-right:5px;">TR</span> 🚛 TRAILER 40</div>
+            <div><span class="cargo-badge" style="position:static; display:inline-block; margin-right:5px;">PW</span> 📦 Plywood Crates</div>
+            <div><span class="cargo-badge" style="position:static; display:inline-block; margin-right:5px;">CB</span> ⬜ Cement Board</div>
         </div>
     `;
     return div;
-};
-legend.addTo(map);
+  };
+  legend.addTo(map);
 
-  // ✅ Analytics toggle
-window.toggleAnalytics = function () {
+  window.toggleAnalytics = function () {
     const banner = document.getElementById('analytics-banner');
     banner.classList.toggle('hidden');
-};
+  };
 
-window.toggleImport = function () {
+  window.toggleImport = function () {
     const container = document.getElementById('import-container');
     container.classList.toggle('hidden');
-};
+  };
 
-function updateAnalytics(data) {
+  function updateAnalytics(data) {
     const banner = document.getElementById('analytics-banner');
-    banner.classList.add('hidden'); // <-- Force it to stay hidden after upload
+    banner.classList.add('hidden'); 
 
     const content = document.getElementById('analytics-content');
     const warehouseCount = new Set();
@@ -183,9 +201,9 @@ function updateAnalytics(data) {
         Cargo: ${cargo}<br>
         Trailer: ${trailer}<br>
     `;
-}
+  }
 
-window.navigateToWarehouse = function(warehouseId) {
+  window.navigateToWarehouse = function(warehouseId) {
     let foundMarker = null;
 
     markerClusterGroup.eachLayer(marker => {
@@ -201,7 +219,6 @@ window.navigateToWarehouse = function(warehouseId) {
             duration: 1.5 
         });
         
-        // ✅ Cluster-safe change: Waits for flyTo to end, breaks the cluster open, then shows the popup
         setTimeout(() => {
             markerClusterGroup.zoomToShowLayer(foundMarker, () => {
                 foundMarker.openPopup();
@@ -210,6 +227,5 @@ window.navigateToWarehouse = function(warehouseId) {
     } else {
         alert(`Warehouse ${warehouseId} location not found on the map. Make sure your CSV data is imported.`);
     }
-};
-
-  });
+  };
+});
