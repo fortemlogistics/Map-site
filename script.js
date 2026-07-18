@@ -105,17 +105,17 @@ document.addEventListener('DOMContentLoaded', () => {
           } else {
             const vehicle = (vehicleType || '').toUpperCase().trim();
             
-            // Text badge conditionals for mapped vehicles
+            // Evaluates and sets explicit marker tags safely without accidental fallback traps
             if (vehicle.includes('TRAILER')) {
               cargoBadge = '<span class="cargo-badge cargo-text-badge">Trailer</span>';
-            } else if (vehicle.includes('CARGO') || vehicle === '') { 
-              cargoBadge = '<span class="cargo-badge cargo-text-badge">Cargo</span>';
+            } else if (vehicle.includes('BULK')) { 
+              cargoBadge = '<span class="cargo-badge cargo-text-badge">Bulk Truck</span>';
+            } else if (vehicle.includes('FORWARD')) { 
+              cargoBadge = '<span class="cargo-badge cargo-text-badge">Forward</span>';
             } else if (vehicle.includes('ELF')) {
               cargoBadge = '<span class="cargo-badge cargo-text-badge">Elf</span>';
-            } else if (vehicle.includes('BULK')) {
-              cargoBadge = '<span class="cargo-badge cargo-text-badge">Bulk</span>';
-            } else if (vehicle.includes('FORWARD')) {
-              cargoBadge = '<span class="cargo-badge cargo-text-badge">Forward</span>';
+            } else if (vehicle.includes('CARGO') || vehicle === '') { 
+              cargoBadge = '<span class="cargo-badge cargo-text-badge">Cargo</span>';
             }
           }
 
@@ -194,7 +194,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (rowType === 'warehouse') {
             warehouseCount.add(row.originWarehouseId);
         } else {
-            // Counts everything else as a truck/rate row to match your map markers
             truckCount++;
             const vehicle = (row.vehicleType || '').toUpperCase().trim();
             
@@ -202,7 +201,7 @@ document.addEventListener('DOMContentLoaded', () => {
             else if (vehicle.includes('ELF')) elf++;
             else if (vehicle.includes('BULK')) bulk++;
             else if (vehicle.includes('FORWARD')) forward++;
-            else if (vehicle.includes('CARGO') || vehicle === '') cargo++; 
+            else if (vehicle.includes('CARGO') || vehicle === '') cargo++;
         }
     });
 
