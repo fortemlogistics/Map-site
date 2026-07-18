@@ -206,17 +206,19 @@ window.navigateToWarehouse = function(warehouseId) {
     }
 };
 
+// ✅ Fixed Feature: Search location/destination, spiderfy clusters if needed, and show details
 window.executeMapSearch = function() {
-    const query = document.getElementById('map-search-input').value.trim().toLowerCase();
+    const inputEl = document.getElementById('map-search-input');
+    const query = inputEl ? inputEl.value.trim().toLowerCase() : '';
     if (!query) return;
 
     let foundMarker = null;
 
-    // Scan through all active map markers
+    // Scan through all markers inside the cluster group
     markerClusterGroup.eachLayer(marker => {
         if (marker.getPopup()) {
             const popupContent = marker.getPopup().getContent().toLowerCase();
-            // Matches if the search term is found in the label, destination, or warehouse ID
+            // Matches if the search term is found in the popup html layout text
             if (popupContent.includes(query)) {
                 foundMarker = marker;
             }
@@ -224,25 +226,31 @@ window.executeMapSearch = function() {
     });
 
     if (foundMarker) {
-        const latLng = foundMarker.getLatLng();
-        
-        // Smoothly zoom into the matching item location
-        map.flyTo(latLng, 15, {
+        // 1. Zoom and pan to the target coordinates smoothly
+        map.flyTo(foundMarker.getLatLng(), 15, {
             animate: true,
             duration: 1.2
         });
 
-        // Automatically open the details popup box
-        foundMarker.openPopup();
+        // 2. Wait slightly for the map transition animation to finish, then open the bubble
+        setTimeout(() => {
+            // Leaflet Cluster function: automatically zooms/opens the cluster to reveal the specific marker
+            markerClusterGroup.zoomToShowLayer(foundMarker, () => {
+                foundMarker.openPopup();
+            });
+        }, 1200);
+
     } else {
-        alert("No matching location or warehouse found on the map.");
+        alert("No matching location, warehouse, or destination found on the map.");
     }
 };
 
-document.getElementById('map-search-input').addEventListener('keypress', function(e) {
-    if (e.key === 'Enter') {
-        executeMapSearch();
-    }
-});
-
-}); 
+// Also trigger the search button if the user presses the 'Enter' key inside the input box
+const searchInput = document.getElementById('map-search-input');
+if (searchInput) {
+    searchInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            executeMapSearch();
+        }
+    });
+  });
