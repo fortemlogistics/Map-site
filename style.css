@@ -129,7 +129,7 @@ header.top-navbar {
     font-size: 8px !important;
     padding: 1px 3px !important;
     top: -6px !important;
-    right: -12px !important; /* Shifts it slightly right so it doesn't hide behind the truck cab */
-    z-index: 9999; /* Forces it to always stay on top of the truck icon graphic */
+    right: -12px !important; 
+    z-index: 9999; 
 }
 }
