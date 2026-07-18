@@ -125,3 +125,19 @@ header.top-navbar {
     background-color: rgba(0, 0, 0, 0.05);
     border-radius: 3px;
 }
+
+/* ✅ Added: Styles the text badge on the truck markers and inside the legend */
+.cargo-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: #ffffff;
+    color: #000000;
+    font-family: Arial, sans-serif;
+    font-size: 10px;
+    font-weight: bold;
+    padding: 1px 3px;
+    border: 1px solid #000000;
+    border-radius: 3px;
+    text-shadow: none; 
+}
