@@ -189,16 +189,20 @@ document.addEventListener('DOMContentLoaded', () => {
     let forward = 0;
 
     data.forEach(row => {
-        const type = (row.type || '').toLowerCase();
-        if (type === 'warehouse') warehouseCount.add(row.originWarehouseId);
-        if (type === 'rating') {
+        const rowType = (row.type || '').trim().toLowerCase();
+        
+        if (rowType === 'warehouse') {
+            warehouseCount.add(row.originWarehouseId);
+        } else {
+            // Counts everything else as a truck/rate row to match your map markers
             truckCount++;
             const vehicle = (row.vehicleType || '').toUpperCase().trim();
+            
             if (vehicle.includes('TRAILER')) trailer++;
             else if (vehicle.includes('ELF')) elf++;
             else if (vehicle.includes('BULK')) bulk++;
             else if (vehicle.includes('FORWARD')) forward++;
-            else if (vehicle.includes('CARGO') || vehicle === '') cargo++; // Cargo or blank defaults
+            else if (vehicle.includes('CARGO') || vehicle === '') cargo++; 
         }
     });
 
