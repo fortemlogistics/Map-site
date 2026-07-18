@@ -104,14 +104,11 @@ document.addEventListener('DOMContentLoaded', () => {
             iconType = 'fa-warehouse';
           } else {
             const vehicle = (vehicleType || '').toUpperCase().trim();
-            const dest = (destination || '').toUpperCase().trim();
             
             if (vehicle.includes('TRAILER')) {
               cargoBadge = '<span class="cargo-badge">TR</span>';
-            } else if (vehicle.includes('PLYWOOD') || dest.includes('PLYWOOD')) {
-              cargoBadge = '<span class="cargo-badge">PW</span>';
-            } else if (vehicle.includes('CEMENT') || dest.includes('CEMENT')) {
-              cargoBadge = '<span class="cargo-badge">CB</span>';
+            } else if (vehicle.includes('CARGO')) {
+              cargoBadge = '<span class="cargo-badge" style="font-size: 8px; padding: 1px 2px;">Cargo</span>';
             }
           }
 
