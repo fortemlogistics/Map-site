@@ -246,7 +246,7 @@ document.addEventListener('DOMContentLoaded', () => {
             else if (vehicle.includes('ELF')) elf++;
             else if (vehicle.includes('BULK')) bulk++;
             else if (vehicle.includes('FORWARD')) forward++;
-            else if (vehicle.includes('TRANSPORTIFY') || vehicle.includes('OTHER')) other++;
+            else if (vehicle.includes('TRANSPORTIFY/OTHER') || vehicle.includes('OTHER')) other++;
             else if (vehicle.includes('CARGO') || vehicle === '') cargo++;
         }
     });
