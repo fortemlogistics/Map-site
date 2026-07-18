@@ -206,4 +206,43 @@ window.navigateToWarehouse = function(warehouseId) {
     }
 };
 
+window.executeMapSearch = function() {
+    const query = document.getElementById('map-search-input').value.trim().toLowerCase();
+    if (!query) return;
+
+    let foundMarker = null;
+
+    // Scan through all active map markers
+    markerClusterGroup.eachLayer(marker => {
+        if (marker.getPopup()) {
+            const popupContent = marker.getPopup().getContent().toLowerCase();
+            // Matches if the search term is found in the label, destination, or warehouse ID
+            if (popupContent.includes(query)) {
+                foundMarker = marker;
+            }
+        }
+    });
+
+    if (foundMarker) {
+        const latLng = foundMarker.getLatLng();
+        
+        // Smoothly zoom into the matching item location
+        map.flyTo(latLng, 15, {
+            animate: true,
+            duration: 1.2
+        });
+
+        // Automatically open the details popup box
+        foundMarker.openPopup();
+    } else {
+        alert("No matching location or warehouse found on the map.");
+    }
+};
+
+document.getElementById('map-search-input').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        executeMapSearch();
+    }
+});
+
 }); 
