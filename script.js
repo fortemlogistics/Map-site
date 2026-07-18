@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
     'M03': 'yellow',
     'M01': 'black',
     'M04': 'gray',
-    'LO2': 'white'
+    'L02': 'white'
   };
 
   function getColor(id) {
