@@ -39,6 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
   map.addLayer(markerClusterGroup);
 
   const warehouseColors = {
+    'L02': 'white', 
     'L07': 'blue',
     'L08': 'red',
     'L10': 'green',
@@ -47,8 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
     'V03': 'purple',
     'M03': 'yellow',
     'M01': 'black',
-    'M04': 'gray',
-    'L02': 'white'
+    'M04': 'gray'
   };
 
   function getColor(id) {
