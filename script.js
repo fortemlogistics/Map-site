@@ -230,12 +230,12 @@ document.addEventListener('DOMContentLoaded', () => {
     let elf = 0;
     let bulk = 0;
     let forward = 0;
+    let other = 0; // Added counter for Transportify/Other
 
     data.forEach(row => {
         const rowType = (row.type || '').trim().toLowerCase();
         const warehouseId = (row.originWarehouseId || '').trim().toUpperCase();
         
-        // Filters out the head office L00 from counts
         if (rowType === 'warehouse' && warehouseId !== 'L00') {
             warehouseCount.add(row.originWarehouseId);
         } else if (rowType !== 'warehouse') {
@@ -246,6 +246,7 @@ document.addEventListener('DOMContentLoaded', () => {
             else if (vehicle.includes('ELF')) elf++;
             else if (vehicle.includes('BULK')) bulk++;
             else if (vehicle.includes('FORWARD')) forward++;
+            else if (vehicle.includes('TRANSPORTIFY') || vehicle.includes('OTHER')) other++;
             else if (vehicle.includes('CARGO') || vehicle === '') cargo++;
         }
     });
@@ -261,6 +262,7 @@ document.addEventListener('DOMContentLoaded', () => {
         Elf: ${elf}<br>
         Bulk Truck: ${bulk}<br>
         Forward: ${forward}<br>
+        Transportify/Other: ${other}<br>
     `;
   }
 
