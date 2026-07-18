@@ -125,38 +125,3 @@ header.top-navbar {
     background-color: rgba(0, 0, 0, 0.05);
     border-radius: 3px;
 }
-.search-container {
-    position: absolute;
-    top: 75px;
-    left: 20px;
-    z-index: 400; /* Sits cleanly over the Leaflet map layers */
-    display: flex;
-    gap: 5px;
-    background: white;
-    padding: 6px;
-    border-radius: 4px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-}
-
-.search-container input {
-    padding: 6px 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    width: 200px;
-    font-size: 14px;
-}
-
-.search-container button {
-    padding: 6px 12px;
-    background-color: #0e1320;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-}
-
-.search-container button:hover {
-    background-color: #1a243a;
-}
-
