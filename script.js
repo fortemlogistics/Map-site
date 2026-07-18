@@ -90,6 +90,12 @@ document.addEventListener('DOMContentLoaded', () => {
         
         renderMapLayers(globalCSVData);
         updateAnalytics(globalCSVData);
+
+        // Automatically hide the import container after successful upload
+        const container = document.getElementById('import-container');
+        if (container) {
+          container.classList.add('hidden');
+        }
       }
     });
   });
@@ -193,7 +199,7 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
         <div class="legend-column">
             <strong>Capacity</strong>
-            <div>Templates 🚛 TRAILER 40 (20 Sling or 40 Jumbo)</div>
+            <div>🚛 TRAILER 40 (20 Sling or 40 Jumbo)</div>
             <div>📦 18-20 CRATES (Plywood)</div>
             <div>⬜ 10-13 CRATES (Cement Board)</div>
         </div>
