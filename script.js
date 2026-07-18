@@ -200,7 +200,13 @@ window.navigateToWarehouse = function(warehouseId) {
             animate: true,
             duration: 1.5 
         });
-        foundMarker.openPopup();
+        
+        // ✅ Cluster-safe change: Waits for flyTo to end, breaks the cluster open, then shows the popup
+        setTimeout(() => {
+            markerClusterGroup.zoomToShowLayer(foundMarker, () => {
+                foundMarker.openPopup();
+            });
+        }, 1500);
     } else {
         alert(`Warehouse ${warehouseId} location not found on the map. Make sure your CSV data is imported.`);
     }
